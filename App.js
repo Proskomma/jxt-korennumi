@@ -21,16 +21,5 @@ export default function App() {
 
 
   return (
-    <View>
-      <MyButton  
-      title="Button 1" 
-      onPress={() => console.log('Button 1 pressed')}/>
-      <MyButton  
-      title="Button 1" 
-      onPress={() => console.log('Button 1 pressed')}/>
     <MainPage/>
-    <View style={bottomTab.bar}>
-      
-    </View>
-    </View>
   )}
