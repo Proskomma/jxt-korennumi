@@ -2,10 +2,10 @@
 let queryOneChapterOfOneDocSets = `
 {
   document(docSetId: "%docSetId%" withBook: "%bookCode%"){
+    id
     cvIndex(chapter: %idChapter%) {
       chapter
-      verses {
-        
+      verses {      
         verse {
           verseRange
           text(normalizeSpace: true)

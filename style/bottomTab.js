@@ -13,5 +13,8 @@ export default StyleSheet.create({
         backgroundColor : 'red',
         width : '10%',
         height : '100%',
+    },
+    chapter_label : {
+        fontWeight : "bold"
     }
 });     
