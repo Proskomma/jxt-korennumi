@@ -2,24 +2,44 @@ import React, { useState } from 'react';
 import {MainPage} from './components/mainPage';
 import bottomTab from './style/bottomTab'
 import { View, ScrollView,Text,Button,TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-function MyButton({ title, onPress }) {
+
+
+
+function AnotherScreen() {
   return (
-    <TouchableOpacity style={bottomTab.button} onPress={onPress}>
-      <Text>{title}</Text>
-    </TouchableOpacity>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Another Tab!</Text>
+    </View>
   );
 }
 
-
+const Tab = createBottomTabNavigator();
 
 export default function App() {
-  const [view1,setView1] = useState(true);
-  const [view2,setView2] = useState(false);
-
-
-
   return (
-    <MainPage/>
-  )}
+    <NavigationContainer>
+      <Tab.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false,
+          
+        }}>
+        <Tab.Screen 
+        name="MainPage" 
+        component={MainPage} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesomeIcon name="book" color={color} size={size} />
+          ),
+          
+        
+        }}/>
+        <Tab.Screen name="Another Tab" component={AnotherScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}

@@ -1,3 +1,5 @@
+import { tree2nodes } from "proskomma-core";
+
 const defaultSettings = {
     showWordAtts: false,
     showTitles: true,
@@ -17,18 +19,30 @@ const sofria2WebActions = {
             description: "Set up",
             test: () => true,
             action: ({config, context, workspace, output}) => {
+                if(config.displayPartOfText != null){
+                    if(typeof(config.displayPartOfText.numberBlocks)!= typeof(1)){
+                        
+                        throw new Error('numberBlocks must be typeof int');
+                    }
+                    if(!['begin','continue'].includes(config.displayPartOfText.state)){
+                        
+                        throw new Error('state must be typeof string and one of begin or continue');
+                    }
+                }
                 workspace.settings = {...defaultSettings, ...config}
                 workspace.webParas = [];
                 output.sofria = {};
                 output.sofria.sequence = {};
-                workspace.currentSequence = output.sofria.sequence;
+                workspace.currentSequence = output.sofria.sequence ;
                 workspace.paraContentStack = [];
                 workspace.footnoteNo = 1;
                 workspace.bookCode = context.document.metadata.document.bookCode;
                 workspace.chapter = 0;
+                
             },
         }
     ],
+ 
     startSequence: [
         {
             description: "identity",
@@ -47,7 +61,7 @@ const sofria2WebActions = {
                 if (workspace.currentSequence.type === 'footnote') {
                     workspace.footnoteNo++;
                 }
-                workspace.currentSequence = null;
+                workspace.currentSequence = {};
             }
         },
     ],

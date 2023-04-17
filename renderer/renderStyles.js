@@ -251,6 +251,8 @@ const renderStyles = {
 
 
 function ConvertCssToReactNativeStyle(styleSheet){
+    //  note that this function is not exaustive and need futher adding. Unfortunatly not all css 
+    //is compatible with react native so be sure to check the documentation when adding css 
     let copyStyleSheet = styleSheet;
     const keyFirstLayerArray = Object.keys(copyStyleSheet);
     keyFirstLayerArray.map(firstLayerKeys => {
