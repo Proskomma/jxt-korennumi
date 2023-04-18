@@ -99,7 +99,7 @@ const renderers = {
                 </InlineElement> :
                 ["usfm:mt", "usfm:s"].includes(subType) ?
                     TitleContent :
-                    <View key={Math.random()} style={{ ...getStyles('paras', subType), flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start' }}>
+                    <View key={`paragraph ${Math.random()}  `} style={{ ...getStyles('paras', subType), flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start' }}>
                         {content}
                     </View>
 
