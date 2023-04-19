@@ -6,5 +6,6 @@ let queryOneDocument = `
     cIndexes {
       chapter
     }
-}}`
+}}
+`
 export { queryOneDocument };

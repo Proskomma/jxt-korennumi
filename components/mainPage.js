@@ -7,7 +7,7 @@ import sofria2WebActions from '../renderer/sofria2web';
 import { renderers } from '../renderer/render2reactNative';
 import React, { useState, useCallback, useEffect } from 'react';
 
-const succinct = require('../succinct/test.json');
+const succinct = require('../succinct/lsg.json');
 
 const pk = new Proskomma([
   {
@@ -38,7 +38,7 @@ function multipleReplace(query, tabl) {
 pk.loadSuccinctDocSet(succinct);
 let documentQuery = multipleReplace(
   queryOneDocument,
-  [["%docSetId%", "local_test_1"], ["%bookCode%", "GEN"]]);
+  [["%docSetId%", "local_lsg_1"], ["%bookCode%", "TIT"]]);
 
 let documentResult = pk.gqlQuerySync(documentQuery);
 const renderer = new SofriaRenderFromProskomma({
@@ -68,7 +68,6 @@ const config = {
   },
   renderers,
 };
-
 const output = {};
 const context = {};
 const workspace = {};
@@ -91,7 +90,6 @@ try {
 }
 
 function MainPage() {
-
   config.displayPartOfText.state = 'begin';
   const [paras, setParas] = useState(output.paras); // Initial set of items
   const [showParas, setShownParas] = useState({ showParas: [], indexPara: 0 });
@@ -101,27 +99,27 @@ function MainPage() {
 
     if (paras.length < 5) {
       newShowParas = paras.slice(0, paras.length);
-      newIndexPara = paras.length;
+      newIndexPara = paras.length-1;
     } else {
       newShowParas = paras.slice(0, 5);
-      newIndexPara = 5;
+      newIndexPara = 4;
     }
-
     // Update the state using the setShownParas function
     setShownParas({ showParas: newShowParas, indexPara: newIndexPara });
   };
   useEffect(() => {
     loadInitialParas();
+    
   }, []);
-
 
   const loadMoreItems = useCallback(() => {
     setShownParas(prevState => {
       const prevParas = prevState.showParas;
       const currentIndex = prevState.indexPara;
+      console.log(currentIndex);
       if (documentResult.data.document.cIndexes.length !== 0) {
-        if (paras.length/2 < currentIndex) {
-        
+        if (paras.length / 2 <= currentIndex) {
+          
           config.chapters = [`${documentResult.data.document.cIndexes.shift().chapter}`];
           renderer.renderDocument1({
             docId: documentResult.data.document.id,
@@ -129,26 +127,39 @@ function MainPage() {
             context,
             workspace,
             output
-          })
+          });
           const newParas = output.paras;
-          
-          setParas([...paras, ...newParas])
-        }
-        
-      }
-      if(paras.length < currentIndex+numberToRender){
-        numberToRender = paras.length - currentIndex;
-      }
-      const newParaToShow = paras.slice(currentIndex, currentIndex + numberToRender);
-      
-      const newIndexPara = currentIndex + numberToRender;
+          const updatedParas = [...paras, ...newParas];
+          setParas(updatedParas)
+          if (paras.length < currentIndex + numberToRender) {
+            numberToRender = 1;
+          }
+          console.log(currentIndex);
+          const newParaToShow = updatedParas.slice(currentIndex+1, currentIndex +1+ numberToRender);
+          const newIndexPara = currentIndex + numberToRender;
 
+          return {
+            showParas: [...prevState.showParas,...newParaToShow],
+            indexPara: newIndexPara,
+          };
+        }
+        else{
+          console.log(currentIndex);
+          const newParaToShow = paras.slice(currentIndex+1, currentIndex+1 + numberToRender);
+          const newIndexPara = currentIndex + numberToRender;
+          console.log(newParaToShow);
+          return {
+            showParas: [...prevState.showParas,...newParaToShow],
+            indexPara: newIndexPara,
+          };
+        }
+      }
       return {
-        showParas: [...prevParas, ...newParaToShow],
-        indexPara: newIndexPara,
+        showParas: prevParas,
+        indexPara: currentIndex ,
       };
     });
-  }, [paras]);
+  }, [showParas]);
 
   const renderItem = useCallback(({ item }) => item, []);
 
@@ -169,7 +180,6 @@ function MainPage() {
     </View>
   );
 }
-
 
 export { MainPage }
 

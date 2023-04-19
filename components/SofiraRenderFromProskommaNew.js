@@ -29,6 +29,40 @@ class SofriaRenderFromProskomma extends ProskommaRender {
             verses: null
         }
     }
+    convertStartEnBlockWihthRendererBlocks(context) {
+        console.log(context.document.id);
+        const StartEndBlock = this.pk.gqlQuerySync(`{document(id: "${context.document.id}"){cIndexes {
+            startBlock
+            endBlock
+          }}}`)
+        console.log(StartEndBlock)
+        const RenderBlocks = this.pk.gqlQuerySync(`{document(id: "${context.document.id}"){
+        mainSequence {
+            blocks {
+              bg {
+                subType
+              }
+            }
+          }}}`)
+
+        let indexOfNewCapter = 0;
+        const result = [];
+        for (let i = 0; i < StartEndBlock.data.document.cIndex.length; i++) {
+            const Chapter = {}
+            Chapter.startBlock = indexOfNewCapter
+            let t = 0;
+            while (t < StartEndBlock.data.document.cIndex.endBlock - StartEndBlock.data.document.cIndex.startBlock) {
+
+                t += RenderBlocks.data.document.mainSequence.blocks[indexOfNewCapter].length + 1;
+                indexOfNewCapter += 1
+            }
+            Chapter.endBlock = indexOfNewCapter;
+            result.push(Chapter);
+        }
+
+        console.log(result)
+    }
+
     renderDocument1({ docId, config, context, workspace, output }) {
         const environment = { config, context, workspace, output };
         context.renderer = this;
@@ -136,6 +170,7 @@ class SofriaRenderFromProskomma extends ProskommaRender {
     renderSequence(environment) {
 
         const context = environment.context;
+        //this.convertStartEnBlockWihthRendererBlocks(context);
         const sequenceId = this.cachedSequenceIds[0];
         const sequenceType = this.pk.gqlQuerySync(`{document(id: "${context.document.id}") {sequence(id:"${sequenceId}") {type} } }`).data.document.sequence.type;
         let documentResult = {};
@@ -146,7 +181,6 @@ class SofriaRenderFromProskomma extends ProskommaRender {
             if (environment.config.chapters) {
                 while (environment.config.chapters.length != 0) {
                     currentChapter = environment.config.chapters.pop();
-
                     if (currentChapter) {
                         currentChapterContext = this.pk.gqlQuerySync(`{document(id: "${context.document.id}") {cIndex(chapter: ${currentChapter}) {
                 startBlock
@@ -154,7 +188,7 @@ class SofriaRenderFromProskomma extends ProskommaRender {
               }}}`)
 
                     }
-
+                    
                     if (currentChapter && currentChapterContext) {
                         for (let i = currentChapterContext.data.document.cIndex.startBlock; i < currentChapterContext.data.document.cIndex.endBlock + 1; i++) {
                             blocksIdsToRender.push(i);
@@ -169,9 +203,10 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                     blocksIdsToRender.push(i);
                 }
             }
-            blocksIdsToRender.sort((a,b)=>(b-a));
+            blocksIdsToRender.sort((a, b) => (b - a));
+            console.log(blocksIdsToRender);
         }
-        else{
+        else {
             for (let i = 0; i < this.pk.gqlQuerySync(`{document(id: "${context.document.id}") {sequence(id:"${sequenceId}") {nBlocks} }}`).data.document.sequence.nBlocks; i++) {
                 blocksIdsToRender.push(i);
             }
