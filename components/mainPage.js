@@ -1,19 +1,14 @@
-import { queryOneChapterOfOneDocSets } from '../graphql/Query/query';
+import { queryOneDocument } from '../graphql/Query/query';
 const { Proskomma } = require('proskomma-core');
 import { View, ScrollView, Text, StatusBar, FlatList } from 'react-native';
 import bottomTab from '../style/bottomTab';
 import SofriaRenderFromProskomma from './SofiraRenderFromProskommaNew';
 import sofria2WebActions from '../renderer/sofria2web';
-import {renderers} from '../renderer/render2reactNative';
-import React, { useState, useCallback } from 'react';
+import { renderers } from '../renderer/render2reactNative';
+import React, { useState, useCallback, useEffect } from 'react';
 
-const succinct = require('../succinct/test.json');
-const truc2 = null;
-const truc = {truc2}
-truc.truc2 = 2;
-const truc3 = truc
-truc3.truc2 = 1
-console.log(truc);
+const succinct = require('../succinct/lsg.json');
+
 const pk = new Proskomma([
   {
     name: "source",
@@ -41,19 +36,21 @@ function multipleReplace(query, tabl) {
 }
 
 pk.loadSuccinctDocSet(succinct);
-let chapterQuery =  multipleReplace(
-  queryOneChapterOfOneDocSets,
-  [["%docSetId%", "local_test_1"], ["%bookCode%", "GEN"]]);
+let documentQuery = multipleReplace(
+  queryOneDocument,
+  [["%docSetId%", "local_lsg_1"], ["%bookCode%", "TIT"]]);
 
-let chapterResult = pk.gqlQuerySync(chapterQuery);
+let documentResult = pk.gqlQuerySync(documentQuery);
 const renderer = new SofriaRenderFromProskomma({
   proskomma: pk,
   actions: sofria2WebActions,
 });
-const numberBlocks = 10;
+
+
+
 const state = 'begin';
 const config = {
-  showWordAtts: false,
+  showWordAtts: true,
   showTitles: true,
   showHeadings: true,
   showIntroductions: true,
@@ -63,75 +60,126 @@ const config = {
   showCharacterMarkup: true,
   showChapterLabels: true,
   showVersesLabels: true,
+  chapters: [`${documentResult.data.document.cIndexes.shift().chapter}`],
   selectedBcvNotes: [],
-  displayPartOfText: {numberBlocks,state},
+  displayPartOfText: { state },
   bcvNotesCallback: (bcv) => {
     setBcvNoteRef(bcv);
   },
   renderers,
 };
-
 const output = {};
 const context = {};
 const workspace = {};
-
+let numberToRender = 1;
 try {
 
   renderer.renderDocument1({
-      docId: chapterResult.data.document.id,
-      config,
-      context,
-      workspace,
-      output,
-      
-      
-      }) ;
+    docId: documentResult.data.document.id,
+    config,
+    context,
+    workspace,
+    output,
+
+
+  });
 
 } catch (err) {
   console.log("Renderer", err);
   throw err;
 }
 
-
 function MainPage() {
-  config.displayPartOfText.state = 'continue';
-  const [paras, setParas] = useState(output.paras.slice(0, 10)); // Initial set of items
-  const loadMoreItems = useCallback(() => {
-    // Load more items when the user reaches the end of the list
-    setParas(prevParas => {
-      renderer.renderDocument1({
-        docId: chapterResult.data.document.id,
-        config,
-        context,
-        workspace,
-        output})
+  config.displayPartOfText.state = 'begin';
+  const [paras, setParas] = useState(output.paras); // Initial set of items
+  const [showParas, setShownParas] = useState({ showParas: [], indexPara: 0 });
+  const loadInitialParas = () => {
+    let newShowParas = [];
+    let newIndexPara;
 
-      console.log(context);
-      const newParas = output.paras.slice(prevParas.length, prevParas.length +  config.displayPartOfText.numberBlocks);
-      return [...prevParas, ...newParas];
-    });
+    if (paras.length < 5) {
+      newShowParas = paras.slice(0, paras.length);
+      newIndexPara = paras.length-1;
+    } else {
+      newShowParas = paras.slice(0, 5);
+      newIndexPara = 4;
+    }
+    // Update the state using the setShownParas function
+    setShownParas({ showParas: newShowParas, indexPara: newIndexPara });
+  };
+  useEffect(() => {
+    loadInitialParas();
+    
   }, []);
+
+  const loadMoreItems = useCallback(() => {
+    setShownParas(prevState => {
+      const prevParas = prevState.showParas;
+      const currentIndex = prevState.indexPara;
+      console.log(currentIndex);
+      if (documentResult.data.document.cIndexes.length !== 0) {
+        if (paras.length / 2 <= currentIndex) {
+          
+          config.chapters = [`${documentResult.data.document.cIndexes.shift().chapter}`];
+          renderer.renderDocument1({
+            docId: documentResult.data.document.id,
+            config,
+            context,
+            workspace,
+            output
+          });
+          const newParas = output.paras;
+          const updatedParas = [...paras, ...newParas];
+          setParas(updatedParas)
+          if (paras.length < currentIndex + numberToRender) {
+            numberToRender = 1;
+          }
+          console.log(currentIndex);
+          const newParaToShow = updatedParas.slice(currentIndex+1, currentIndex +1+ numberToRender);
+          const newIndexPara = currentIndex + numberToRender;
+
+          return {
+            showParas: [...prevState.showParas,...newParaToShow],
+            indexPara: newIndexPara,
+          };
+        }
+        else{
+          console.log(currentIndex);
+          const newParaToShow = paras.slice(currentIndex+1, currentIndex+1 + numberToRender);
+          const newIndexPara = currentIndex + numberToRender;
+          console.log(newParaToShow);
+          return {
+            showParas: [...prevState.showParas,...newParaToShow],
+            indexPara: newIndexPara,
+          };
+        }
+      }
+      return {
+        showParas: prevParas,
+        indexPara: currentIndex ,
+      };
+    });
+  }, [showParas]);
 
   const renderItem = useCallback(({ item }) => item, []);
 
   const keyExtractor = useCallback((item, index) => `para-${index}`, []);
 
   return (
-    <View style={{flex:1}}>
+    <View style={{ flex: 1 }}>
       <Text>Chapitre 1</Text>
       <FlatList
-        style={{flexGrow: 1}}
-        data={paras}
+        style={{ flexGrow: 1 }}
+        data={showParas.showParas}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         onEndReached={loadMoreItems}
-        onEndReachedThreshold={0.5} // Trigger loadMoreItems when the user reaches 10% from the end
+        onEndReachedThreshold={0.8} // Trigger loadMoreItems when the user reaches 50% from the end
       />
       <StatusBar style="auto" />
     </View>
   );
 }
-
 
 export { MainPage }
 

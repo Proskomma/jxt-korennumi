@@ -20,10 +20,6 @@ const sofria2WebActions = {
             test: () => true,
             action: ({config, context, workspace, output}) => {
                 if(config.displayPartOfText != null){
-                    if(typeof(config.displayPartOfText.numberBlocks)!= typeof(1)){
-                        
-                        throw new Error('numberBlocks must be typeof int');
-                    }
                     if(!['begin','continue'].includes(config.displayPartOfText.state)){
                         
                         throw new Error('state must be typeof string and one of begin or continue');

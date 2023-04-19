@@ -1,7 +1,11 @@
 
-let queryOneChapterOfOneDocSets = `
+let queryOneDocument = `
 {
   document(docSetId: "%docSetId%" withBook: "%bookCode%"){
     id
-}}`
-export { queryOneChapterOfOneDocSets };
+    cIndexes {
+      chapter
+    }
+}}
+`
+export { queryOneDocument };
