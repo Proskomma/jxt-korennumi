@@ -60,6 +60,7 @@ const config = {
   showCharacterMarkup: true,
   showChapterLabels: true,
   showVersesLabels: true,
+  block: { nb: 1 },
   chapters: [`${documentResult.data.document.cIndexes.shift().chapter}`],
   selectedBcvNotes: [],
   displayPartOfText: { state },
@@ -90,36 +91,16 @@ try {
 }
 
 function MainPage() {
-  config.displayPartOfText.state = 'begin';
-  const [paras, setParas] = useState(output.paras); // Initial set of items
-  const [showParas, setShownParas] = useState({ showParas: [], indexPara: 0 });
-  const loadInitialParas = () => {
-    let newShowParas = [];
-    let newIndexPara;
+  config.displayPartOfText.state = 'continue';
+  const [shownParas, setShownParas] = useState(output.paras);
 
-    if (paras.length < 5) {
-      newShowParas = paras.slice(0, paras.length);
-      newIndexPara = paras.length-1;
-    } else {
-      newShowParas = paras.slice(0, 5);
-      newIndexPara = 4;
-    }
-    // Update the state using the setShownParas function
-    setShownParas({ showParas: newShowParas, indexPara: newIndexPara });
-  };
-  useEffect(() => {
-    loadInitialParas();
-    
-  }, []);
 
   const loadMoreItems = useCallback(() => {
     setShownParas(prevState => {
-      const prevParas = prevState.showParas;
-      const currentIndex = prevState.indexPara;
-      console.log(currentIndex);
-      if (documentResult.data.document.cIndexes.length !== 0) {
-        if (paras.length / 2 <= currentIndex) {
-          
+
+      if (documentResult.data.document.cIndexes.length != 0) {
+        if (config.block.blocks.length < config.block.nb) {
+
           config.chapters = [`${documentResult.data.document.cIndexes.shift().chapter}`];
           renderer.renderDocument1({
             docId: documentResult.data.document.id,
@@ -128,38 +109,76 @@ function MainPage() {
             workspace,
             output
           });
-          const newParas = output.paras;
-          const updatedParas = [...paras, ...newParas];
-          setParas(updatedParas)
-          if (paras.length < currentIndex + numberToRender) {
-            numberToRender = 1;
-          }
-          console.log(currentIndex);
-          const newParaToShow = updatedParas.slice(currentIndex+1, currentIndex +1+ numberToRender);
-          const newIndexPara = currentIndex + numberToRender;
 
-          return {
-            showParas: [...prevState.showParas,...newParaToShow],
-            indexPara: newIndexPara,
-          };
+          return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
         }
-        else{
-          console.log(currentIndex);
-          const newParaToShow = paras.slice(currentIndex+1, currentIndex+1 + numberToRender);
-          const newIndexPara = currentIndex + numberToRender;
-          console.log(newParaToShow);
-          return {
-            showParas: [...prevState.showParas,...newParaToShow],
-            indexPara: newIndexPara,
-          };
+        else {
+
+          renderer.renderDocument1({
+            docId: documentResult.data.document.id,
+            config,
+            context,
+            workspace,
+            output
+          });
+
+          return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
         }
       }
-      return {
-        showParas: prevParas,
-        indexPara: currentIndex ,
-      };
-    });
-  }, [showParas]);
+      else {
+        if (config.block.blocks.length < config.block.nb) {
+          renderer.renderDocument1({
+            docId: documentResult.data.document.id,
+            config,
+            context,
+            workspace,
+            output
+          });
+
+          return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
+        }
+        else {
+
+          renderer.renderDocument1({
+            docId: documentResult.data.document.id,
+            config,
+            context,
+            workspace,
+            output
+          });
+          if (config.block.blocks.length === 0) {
+            return [sh]
+
+          }
+          if (config.block.blocks.length < config.block.nb) {
+
+            config.chapters = [`${documentResult.data.document.cIndexes.shift().chapter}`];
+            renderer.renderDocument1({
+              docId: documentResult.data.document.id,
+              config,
+              context,
+              workspace,
+              output
+            });
+
+            return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
+          }
+          else {
+
+            renderer.renderDocument1({
+              docId: documentResult.data.document.id,
+              config,
+              context,
+              workspace,
+              output
+            });
+
+            return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
+          }
+        }
+
+    }  });
+  }, []);
 
   const renderItem = useCallback(({ item }) => item, []);
 
@@ -170,7 +189,7 @@ function MainPage() {
       <Text>Chapitre 1</Text>
       <FlatList
         style={{ flexGrow: 1 }}
-        data={showParas.showParas}
+        data={shownParas}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         onEndReached={loadMoreItems}
