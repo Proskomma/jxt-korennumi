@@ -29,38 +29,9 @@ class SofriaRenderFromProskomma extends ProskommaRender {
             verses: null
         }
     }
-    convertStartEnBlockWihthRendererBlocks(context) {
-        const StartEndBlock = this.pk.gqlQuerySync(`{document(id: "${context.document.id}"){cIndexes {
-            startBlock
-            endBlock
-          }}}`)
-        const RenderBlocks = this.pk.gqlQuerySync(`{document(id: "${context.document.id}"){
-        mainSequence {
-            blocks {
-              bg {
-                subType
-              }
-            }
-          }}}`)
-
-        let indexOfNewCapter = 0;
-        const result = [];
-        for (let i = 0; i < StartEndBlock.data.document.cIndex.length; i++) {
-            const Chapter = {}
-            Chapter.startBlock = indexOfNewCapter
-            let t = 0;
-            while (t < StartEndBlock.data.document.cIndex.endBlock - StartEndBlock.data.document.cIndex.startBlock) {
-
-                t += RenderBlocks.data.document.mainSequence.blocks[indexOfNewCapter].length + 1;
-                indexOfNewCapter += 1
-            }
-            Chapter.endBlock = indexOfNewCapter;
-            result.push(Chapter);
-        }
-
-    }
 
     renderDocument1({ docId, config, context, workspace, output }) {
+
         const environment = { config, context, workspace, output };
         context.renderer = this;
         const documentResult = this.pk.gqlQuerySync(`{
@@ -84,6 +55,9 @@ class SofriaRenderFromProskomma extends ProskommaRender {
         const mainId = documentResult.data.document.mainSequence.id;
         const nSequences = documentResult.data.document.nSequences;
         this.sequences = {};
+        if (!environment.config.block) {
+            environment.config.block = { nb: 200 };
+        }
         for (const seq of documentResult.data.document.sequences) {
             this.sequences[seq.id] = seq;
         }
@@ -167,13 +141,21 @@ class SofriaRenderFromProskomma extends ProskommaRender {
     renderSequence(environment) {
 
         const context = environment.context;
-        //this.convertStartEnBlockWihthRendererBlocks(context);
         const sequenceId = this.cachedSequenceIds[0];
         const sequenceType = this.pk.gqlQuerySync(`{document(id: "${context.document.id}") {sequence(id:"${sequenceId}") {type} } }`).data.document.sequence.type;
         let documentResult = {};
+
         let currentChapter = null
         let currentChapterContext = null
         let blocksIdsToRender = []
+        if(sequenceType === 'main'){
+            if( environment.config.block.blocks){
+                blocksIdsToRender =  environment.config.block.blocks
+                
+            }
+        }
+        console.log(blocksIdsToRender)
+
         let numberBlockTorender = 0
         if (sequenceType === 'main') {
             if (environment.config.chapters) {
@@ -194,9 +176,10 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                         }
 
                     }
+
                     environment.config.block.blocks = blocksIdsToRender;
                 }
-                    
+
             }
             else {
                 for (let i = 0; i < this.pk.gqlQuerySync(`{document(id: "${context.document.id}") {sequence(id:"${sequenceId}") {nBlocks} }}`).data.document.sequence.nBlocks; i++) {
@@ -208,7 +191,7 @@ class SofriaRenderFromProskomma extends ProskommaRender {
             if (!environment.config.block) {
                 environment.config.block = {}
             }
-            
+
 
             if (!environment.config.block.nb) {
 
@@ -223,10 +206,10 @@ class SofriaRenderFromProskomma extends ProskommaRender {
             }
         }
 
-        if(sequenceType === 'main'){
+        if (sequenceType === 'main') {
             numberBlockTorender = environment.config.block.nb;
         }
-        else{
+        else {
             numberBlockTorender = blocksIdsToRender.length;
         }
 
@@ -252,14 +235,14 @@ class SofriaRenderFromProskomma extends ProskommaRender {
         this.renderEvent('startSequence', environment);
         let outputBlockN = 0;
 
-
         for (let i = 0; i < numberBlockTorender; i++) {
-            if (environment.config.block.blocks.length != 0) {
+
+            if (blocksIdsToRender.length != 0) {
                 let inputBlockN = {}
-                if(sequenceType === 'main'){
-                    inputBlockN = environment.config.block.blocks.pop();
+                if (sequenceType === 'main') {
+                    inputBlockN = blocksIdsToRender.pop();
                 }
-                else{
+                else {
                     inputBlockN = blocksIdsToRender.pop();
 
                 }
@@ -278,6 +261,8 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                 );
                 const blockResult = blocksResult.data.document.sequence.blocks[0];
                 for (const blockGraft of blockResult.bg) {
+
+
                     context.sequences[0].block = {
                         type: "graft",
                         subType: camelCaseToSnakeCase(blockGraft.subType),
@@ -289,6 +274,7 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                     this.cachedSequenceIds.shift();
                     outputBlockN++;
                 }
+
                 const subTypeValues = blockResult.bs.payload.split('/');
                 let subTypeValue = subTypeValues[1] ? `usfm:${subTypeValues[1]}` : subTypeValues[0];
                 context.sequences[0].block = {
@@ -297,7 +283,9 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                     blockN: outputBlockN,
                     wrappers: []
                 }
+
                 this.renderEvent('startParagraph', environment);
+
                 this._tokens = [];
                 if (sequenceType === "main" && this.currentCV.chapter) {
                     const wrapper = {
@@ -323,6 +311,7 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                     environment.context.sequences[0].block.wrappers.unshift(wrapper.subType);
                     this.renderEvent('startWrapper', environment);
                 }
+                console.log(blockResult.items)
                 this.renderContent(blockResult.items, environment);
                 this._tokens = [];
                 if (sequenceType === "main" && this.currentCV.verses) {
@@ -355,6 +344,12 @@ class SofriaRenderFromProskomma extends ProskommaRender {
             }
         }
         this.renderEvent('endSequence', environment);
+        if (sequenceType != 'main') {
+            this.renderEvent('endDocument', environment);
+        }
+        else{
+            environment.config.block.blocks = blocksIdsToRender
+        }
         context.sequences.shift();
 
     }
@@ -399,11 +394,15 @@ class SofriaRenderFromProskomma extends ProskommaRender {
             }
         } else {
             if (this._container) {
+                console.log(`container`)
                 this.maybeRenderText(environment);
                 this.renderContainer(environment);
             }
             if (item.type === 'token') {
+                
                 this._tokens.push(item.payload.replace(/\s+/g, " "));
+                console.log(this._tokens)
+                
             } else if (item.type === "graft") {
                 this.maybeRenderText(environment);
                 const graft = {
@@ -416,7 +415,9 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                 this.renderEvent('inlineGraft', environment);
                 this.cachedSequenceIds.shift();
                 delete environment.context.sequences[0].element;
+                
             } else { // scope
+                
                 this.maybeRenderText(environment);
                 const scopeBits = item.payload.split('/');
                 if (["chapter", "verses"].includes(scopeBits[0])) {
@@ -515,7 +516,9 @@ class SofriaRenderFromProskomma extends ProskommaRender {
             type: 'text',
             text: this._tokens.join(''),
         };
+        console.log(elementContext.text)
         environment.context.sequences[0].element = elementContext;
+        console.log(elementContext)
         this._tokens = [];
         this.renderEvent('text', environment);
         delete environment.context.sequences[0].element;

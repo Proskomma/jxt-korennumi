@@ -7,7 +7,7 @@ import sofria2WebActions from '../renderer/sofria2web';
 import { renderers } from '../renderer/render2reactNative';
 import React, { useState, useCallback, useEffect } from 'react';
 
-const succinct = require('../succinct/lsg.json');
+const succinct = require('../succinct/fnT.json');
 
 const pk = new Proskomma([
   {
@@ -38,9 +38,10 @@ function multipleReplace(query, tabl) {
 pk.loadSuccinctDocSet(succinct);
 let documentQuery = multipleReplace(
   queryOneDocument,
-  [["%docSetId%", "local_lsg_1"], ["%bookCode%", "TIT"]]);
+  [["%docSetId%", "local_fnT_1"], ["%bookCode%", "TIT"]]);
 
 let documentResult = pk.gqlQuerySync(documentQuery);
+console.log(documentResult)
 const renderer = new SofriaRenderFromProskomma({
   proskomma: pk,
   actions: sofria2WebActions,
@@ -50,7 +51,7 @@ const renderer = new SofriaRenderFromProskomma({
 
 const state = 'begin';
 const config = {
-  showWordAtts: true,
+  showWordAtts: false,
   showTitles: true,
   showHeadings: true,
   showIntroductions: true,
