@@ -18,32 +18,32 @@ const sofria2WebActions = {
         {
             description: "Set up",
             test: () => true,
-            action: ({config, context, workspace, output}) => {
-                if(config.displayPartOfText != null){
-                    if(!['begin','continue'].includes(config.displayPartOfText.state)){
-                        
+            action: ({ config, context, workspace, output }) => {
+                if (config.displayPartOfText != null) {
+                    if (!['begin', 'continue'].includes(config.displayPartOfText.state)) {
+
                         throw new Error('state must be typeof string and one of begin or continue');
                     }
                 }
-                workspace.settings = {...defaultSettings, ...config}
+                workspace.settings = { ...defaultSettings, ...config }
                 workspace.webParas = [];
                 output.sofria = {};
                 output.sofria.sequence = {};
-                workspace.currentSequence = output.sofria.sequence ;
+                workspace.currentSequence = output.sofria.sequence;
                 workspace.paraContentStack = [];
                 workspace.footnoteNo = 1;
                 workspace.bookCode = context.document.metadata.document.bookCode;
                 workspace.chapter = 0;
-                
+
             },
         }
     ],
- 
+
     startSequence: [
         {
             description: "identity",
             test: () => true,
-            action: ({context, workspace}) => {
+            action: ({ context, workspace }) => {
                 workspace.currentSequence.type = context.sequences[0].type;
                 workspace.currentSequence.blocks = [];
             }
@@ -53,7 +53,7 @@ const sofria2WebActions = {
         {
             description: "identity",
             test: () => true,
-            action: ({workspace}) => {
+            action: ({ workspace }) => {
                 if (workspace.currentSequence.type === 'footnote') {
                     workspace.footnoteNo++;
                 }
@@ -93,14 +93,16 @@ const sofria2WebActions = {
     inlineGraft: [
         {
             description: "identity",
-            test: ({context, workspace}) => context.sequences[0].element.subType !== "note_caller" &&
+            test: ({ context, workspace }) => context.sequences[0].element.subType !== "note_caller" &&
                 !(["footnote"].includes(context.sequences[0].element.subType) && !workspace.settings.showFootnotes) &&
                 !(["xref"].includes(context.sequences[0].element.subType) && !workspace.settings.showXrefs),
-                action: (environment) => {
+            action: (environment) => {
                 const element = environment.context.sequences[0].element;
+
                 const graftRecord = {
                     type: element.type,
                 };
+
                 if (element.sequence) {
                     graftRecord.sequence = {};
                     const cachedSequencePointer = environment.workspace.currentSequence;
@@ -114,6 +116,7 @@ const sofria2WebActions = {
                     environment.workspace.paraContentStack = cachedParaContentStack;
                     environment.workspace.paraContentStack[0].content.push(sequencePseudoParas);
                     environment.workspace.currentSequence = cachedSequencePointer;
+
                 }
             }
         },
@@ -122,7 +125,7 @@ const sofria2WebActions = {
         {
             description: "Initialise content stack",
             test: () => true,
-            action: ({context, workspace}) => {
+            action: ({ context, workspace }) => {
                 const block = context.sequences[0].block;
                 workspace.paraContentStack = [
                     {
@@ -137,7 +140,7 @@ const sofria2WebActions = {
         {
             description: "Add completed para to webParas",
             test: () => true,
-            action: ({config,context, workspace}) => {
+            action: ({ config, context, workspace }) => {
                 workspace.webParas.push(
                     config.renderers.paragraph(
                         workspace.settings.showParaStyles || ['footnote', 'xref'].includes(context.sequences[0].type) ?
@@ -153,13 +156,13 @@ const sofria2WebActions = {
     startWrapper: [
         {
             description: "Skip usfm:w outside main sequence",
-            test: ({context}) => context.sequences[0].element.subType === "usfm:w" && context.sequences[0].type !== "main",
-            action: () => {}
+            test: ({ context }) => context.sequences[0].element.subType === "usfm:w" && context.sequences[0].type !== "main",
+            action: () => { }
         },
         {
             description: "Handle standard w attributes",
-            test: ({context}) => context.sequences[0].element.subType === "usfm:w",
-            action: ({context, workspace}) => {
+            test: ({ context }) => context.sequences[0].element.subType === "usfm:w",
+            action: ({ context, workspace }) => {
                 const atts = context.sequences[0].element.atts;
                 const standardAtts = {};
                 for (const [key, value] of Object.entries(atts)) {
@@ -178,8 +181,8 @@ const sofria2WebActions = {
         },
         {
             description: "Push to paraContent Stack",
-            test: ({context, workspace}) => !["chapter", "verses"].includes(context.sequences[0].element.subType) && workspace.settings.showCharacterMarkup,
-            action: ({context, workspace}) => {
+            test: ({ context, workspace }) => !["chapter", "verses"].includes(context.sequences[0].element.subType) && workspace.settings.showCharacterMarkup,
+            action: ({ context, workspace }) => {
                 const pushed = {
                     subType: context.sequences[0].element.subType,
                     content: []
@@ -193,25 +196,25 @@ const sofria2WebActions = {
     endWrapper: [
         {
             description: "Skip usfm:w outside main sequence",
-            test: ({context}) => context.sequences[0].element.subType === "usfm:w" && context.sequences[0].type !== "main",
-            action: () => {}
+            test: ({ context }) => context.sequences[0].element.subType === "usfm:w" && context.sequences[0].type !== "main",
+            action: () => { }
         },
         {
             description: "Handle standard w attributes",
-            test: ({context}) => context.sequences[0].element.subType === "usfm:w",
-            action: ({config,workspace}) => {
+            test: ({ context }) => context.sequences[0].element.subType === "usfm:w",
+            action: ({ config, workspace }) => {
                 const popped = workspace.paraContentStack.shift();
-                    workspace.paraContentStack[0].content.push(config.renderers.wWrapper(
-                        (workspace.settings.showWordAtts ? popped.atts : {}),
-                        popped.content
-                    ));
+                workspace.paraContentStack[0].content.push(config.renderers.wWrapper(
+                    (workspace.settings.showWordAtts ? popped.atts : {}),
+                    popped.content
+                ));
                 return false;
             }
         },
         {
             description: "Collapse one level of paraContent Stack",
-            test: ({context, workspace}) => !["chapter", "verses"].includes(context.sequences[0].element.subType) && workspace.settings.showCharacterMarkup,
-            action: ({config,workspace}) => {
+            test: ({ context, workspace }) => !["chapter", "verses"].includes(context.sequences[0].element.subType) && workspace.settings.showCharacterMarkup,
+            action: ({ config, workspace }) => {
                 const popped = workspace.paraContentStack.shift();
                 workspace.paraContentStack[0].content.push(config.renderers.wrapper(popped.subType, popped.content));
             }
@@ -220,8 +223,8 @@ const sofria2WebActions = {
     startMilestone: [
         {
             description: "Handle zaln word-like atts",
-            test: ({context}) => context.sequences[0].element.subType === "usfm:zaln",
-            action: ({context, workspace}) => {
+            test: ({ context }) => context.sequences[0].element.subType === "usfm:zaln",
+            action: ({ context, workspace }) => {
                 const atts = context.sequences[0].element.atts;
                 const standardAtts = {};
                 for (const [key, value] of Object.entries(atts)) {
@@ -242,8 +245,8 @@ const sofria2WebActions = {
     endMilestone: [
         {
             description: "Handle zaln word-like atts",
-            test: ({context}) => context.sequences[0].element.subType === "usfm:zaln",
-            action: ({config,workspace}) => {
+            test: ({ context }) => context.sequences[0].element.subType === "usfm:zaln",
+            action: ({ config, workspace }) => {
                 const popped = workspace.paraContentStack.shift();
                 workspace.paraContentStack[0].content.push(config.renderers.wWrapper(
                     (workspace.settings.showWordAtts ? popped.atts : {}),
@@ -257,10 +260,17 @@ const sofria2WebActions = {
         {
             description: "Push text to para",
             test: () => true,
-            action: ({config,context, workspace}) => {
+            action: ({ config, context, workspace }) => {
+
                 const element = context.sequences[0].element;
-                const renderedText = config.renderers.text(element.text)
-                workspace.paraContentStack[0].content.push(renderedText);
+                //const renderedText = config.renderers.text(element.text);
+                //workspace.paraContentStack[0].content.push(renderedText);
+                element.text.split(" ").map((w,id) => {
+                    
+                    const renderedText = config.renderers.text((id===element.text.split(" ")-1)?w:w+" ")
+                    workspace.paraContentStack[0].content.push(renderedText);
+                })
+
             }
         },
     ],
@@ -268,7 +278,7 @@ const sofria2WebActions = {
         {
             description: "Show chapter/verse markers",
             test: () => true,
-            action: ({config, context, workspace}) => {
+            action: ({ config, context, workspace }) => {
                 const element = context.sequences[0].element;
                 if (element.subType === "chapter_label" && workspace.settings.showChapterLabels) {
                     workspace.chapter = element.atts.number;
@@ -287,7 +297,7 @@ const sofria2WebActions = {
         {
             description: "Build JSX",
             test: () => true,
-            action: ({config,workspace, output}) => {
+            action: ({ config, workspace, output }) => {
                 output.paras = config.renderers.mergeParas(workspace.webParas);
             }
         }

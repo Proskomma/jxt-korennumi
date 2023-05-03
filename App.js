@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import {MainPage} from './components/mainPage';
+import {ReadingScreen} from './components/used/ReadingScreen'
+import {ResizableTab} from './components/proofOfConcept/resizableTab'
 import bottomTab from './style/bottomTab'
 import { View, ScrollView,Text,Button,TouchableOpacity} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
+import { SliderComponent } from './components/proofOfConcept/SliderComponent';
 
 
 
@@ -29,8 +30,8 @@ export default function App() {
           
         }}>
         <Tab.Screen 
-        name="MainPage" 
-        component={MainPage} 
+        name="ReadingScreen" 
+        component={SliderComponent} 
         options={{
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon name="book" color={color} size={size} />
@@ -38,7 +39,7 @@ export default function App() {
           
         
         }}/>
-        <Tab.Screen name="Another Tab" component={AnotherScreen} />
+        <Tab.Screen name="resizableTab" component={ResizableTab} />
       </Tab.Navigator>
     </NavigationContainer>
   );

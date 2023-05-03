@@ -23,38 +23,40 @@ const getStyles = (type, subType) => {
 function InlineElement(props) {
     const [display, setDisplay] = useState(false);
     const toggleDisplay = () => setDisplay(!display);
+
     if (display) {
-        return <div
+        return <Text
             style={{
                 ...props.style,
                 paddingLeft: 8,
                 paddingRight: 8,
                 backgroundColor: "#CCC",
-                marginTop: 16,
                 marginBottom: 16
             }}
-            onClick={toggleDisplay}
+            onPress={toggleDisplay}
         >
             {props.children}
-        </div>
+        </Text>
     } else {
-        return <span
+        return <Text
             style={{
                 verticalAlign: 'top',
                 fontSize: 10,
                 fontWeight: "bold",
                 marginRight: 4,
-                padding: 2,
+                marginLeft: 4,
+                marginTop: 15,
+                padding:2,
                 backgroundColor: "#CCC"
             }}
-            onClick={toggleDisplay}
+            onPress={toggleDisplay}
         >
             {props.linkText}
-        </span>
+        </Text>
     }
 }
 const renderers = {
-    text: text => { return (<View key={Math.random()} style={{ paddingTop: 20 }}><Text >{text}</Text></View>) },
+    text: text => {return (<View key={Math.random()} style={{ paddingTop: 20 }}><Text >{text}</Text></View>) },
     chapter_label: number => <View key={Math.random()} ><Text style={{
         ...getStyles('marks', "chapter_label"),
     }}>{number}</Text></View>,
@@ -63,7 +65,6 @@ const renderers = {
             <Text
                 onClick={() => bcvCallback(bcv)} style={{
                     ...getStyles('marks', "verses_label"),
-
                     textDecoration: "underline",
                     color: "#00D"
                 }}
@@ -79,15 +80,18 @@ const renderers = {
     ,
     paragraph: (subType, content, footnoteNo) => {
         let TitleContent = {};
-
+        
         if (["usfm:mt", "usfm:s"].includes(subType)) {
-            TitleContent = React.cloneElement(content[0]);
-            const updatedChildren = React.Children.map(TitleContent.props.children, (child, index) => {
-                return React.cloneElement(child, { style: { ...getStyles('paras', subType), display: 'flex', flexDirection: 'column' } });
-            })
-            TitleContent = React.cloneElement(TitleContent.props.children, {}, updatedChildren);
-        }
-
+            const updatedContent = content.map((element) => {
+              const updatedChildren = React.Children.map(element.props.children, (child, index) => {
+                
+                  return React.cloneElement(child, { style: { ...getStyles('paras', subType), display: 'flex', flexDirection: 'column' } });
+        
+              });
+              return React.cloneElement(element, {}, updatedChildren);
+            });
+            TitleContent = updatedContent;
+          }
         return (
 
             ["usfm:f", "usfm:x"].includes(subType) ?
@@ -98,7 +102,7 @@ const renderers = {
                     {content}
                 </InlineElement> :
                 ["usfm:mt", "usfm:s"].includes(subType) ?
-                    TitleContent :
+                <View style={{flexDirection:'row'}}>{TitleContent}</View>:
                     <View key={`paragraph ${Math.random()}  `} style={{ ...getStyles('paras', subType), flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start' }}>
                         {content}
                     </View>
