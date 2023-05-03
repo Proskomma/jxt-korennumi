@@ -23,8 +23,7 @@ const getStyles = (type, subType) => {
 function InlineElement(props) {
     const [display, setDisplay] = useState(false);
     const toggleDisplay = () => setDisplay(!display);
-    //console.log('i here');
-    //return <Text>{`bonjour`}</Text>
+
     if (display) {
         return <Text
             style={{
@@ -57,7 +56,7 @@ function InlineElement(props) {
     }
 }
 const renderers = {
-    text: text => {console.log(text);return (<View key={Math.random()} style={{ paddingTop: 20 }}><Text >{text}</Text></View>) },
+    text: text => {return (<View key={Math.random()} style={{ paddingTop: 20 }}><Text >{text}</Text></View>) },
     chapter_label: number => <View key={Math.random()} ><Text style={{
         ...getStyles('marks', "chapter_label"),
     }}>{number}</Text></View>,

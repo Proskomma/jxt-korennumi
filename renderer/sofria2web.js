@@ -126,9 +126,7 @@ const sofria2WebActions = {
             description: "Initialise content stack",
             test: () => true,
             action: ({ context, workspace }) => {
-                console.log(`startpara`)
                 const block = context.sequences[0].block;
-                console.log(block)
                 workspace.paraContentStack = [
                     {
                         subType: block.subType,
@@ -143,7 +141,6 @@ const sofria2WebActions = {
             description: "Add completed para to webParas",
             test: () => true,
             action: ({ config, context, workspace }) => {
-                console.log(workspace.paraContentStack[0].content)
                 workspace.webParas.push(
                     config.renderers.paragraph(
                         workspace.settings.showParaStyles || ['footnote', 'xref'].includes(context.sequences[0].type) ?
@@ -273,7 +270,6 @@ const sofria2WebActions = {
                     const renderedText = config.renderers.text((id===element.text.split(" ")-1)?w:w+" ")
                     workspace.paraContentStack[0].content.push(renderedText);
                 })
-                console.log(workspace.paraContentStack[0].content)
 
             }
         },
