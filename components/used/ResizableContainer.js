@@ -48,20 +48,6 @@ const ResizableContainer = ({ children, canExpand = true, initalHeigth=100 }) =>
 
 const styles = StyleSheet.create({
   
-  handle: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  handleBar: {
-    width: 50,
-    height: 5,
-    backgroundColor: '#666',
-  },
   box: {
     backgroundColor: '#61dafb',
     width: '100%',
