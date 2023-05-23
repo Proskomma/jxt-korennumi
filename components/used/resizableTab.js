@@ -8,7 +8,7 @@ import { debounce } from 'lodash';
 function createRefsArray(length) {
   return Array.from({ length }, () => useRef(null));
 }
-function ResizableTab() {
+function ResizableTab({pk}) {
   const numberText = 2;
   const flatListRefs = createRefsArray(numberText);
   const [isUserScroll, setIsUserScroll] = useState(true);
@@ -18,13 +18,13 @@ function ResizableTab() {
     if (scrollLock) return;
   
     setScrollLock(true);
-    const offsetY = event.nativeEvent.contentOffset.y;
+    const offsetX = event.nativeEvent.contentOffset.x;
   
     if (isUserScroll) {
       setIsUserScroll(false);
       flatListRefs.forEach((ref, index) => {
         if (index !== currentIndex) {
-          ref.current.scrollToOffset({ offset: offsetY, animated: false });
+          ref.current.scrollToOffset({ offset: offsetX, animated: false });
         }
       });
     } else {
@@ -47,11 +47,12 @@ function ResizableTab() {
       key={`reading-screen-${index}`}
       onScroll={(event) => onScroll(event, index)}
       flatListRef={flatListRefs[index]}
+      pk={pk}
     />
   </ResizableContainer>
 ));
 
-return <View style={{ flex: 1 }}>{resizableContainers}</View>;
+return <View style={{flexDirection:'row', flex: 1 }}>{resizableContainers}</View>;
 }
 
 export { ResizableTab };

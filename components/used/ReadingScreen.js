@@ -1,30 +1,11 @@
 import { queryOneDocument } from '../../graphql/Query/query';
-const { Proskomma } = require('proskomma-core');
 import { View, ScrollView, Text, StatusBar, FlatList } from 'react-native';
 import SofriaRenderFromProskomma from './SofiraRenderFromProskommaNew';
 import sofria2WebActions from '../../renderer/sofria2web';
 import { renderers } from '../../renderer/render2reactNative';
 import React, { useState, useCallback, useEffect } from 'react';
+import ConfigDrawer from './TextConfig/configDrawer';
 
-const succinct = require('../../succinct/test.json');
-
-const pk = new Proskomma([
-  {
-    name: "source",
-    type: "string",
-    regex: "^[^\\s]+$",
-  },
-  {
-    name: "project",
-    type: "string",
-    regex: "^[^\\s]+$",
-  },
-  {
-    name: "revision",
-    type: "string",
-    regex: "^[^\\s]+$",
-  },
-]);
 
 function multipleReplace(query, tabl) {
   let ret = query;
@@ -34,70 +15,81 @@ function multipleReplace(query, tabl) {
   return ret
 }
 
-pk.loadSuccinctDocSet(succinct);
-let documentQuery = multipleReplace(
-  queryOneDocument,
-  [["%docSetId%", "local_test_1"], ["%bookCode%", "GEN"]]);
-
-let documentResult = pk.gqlQuerySync(documentQuery);
-const renderer = new SofriaRenderFromProskomma({
-  proskomma: pk,
-  actions: sofria2WebActions,
-});
 
 
 
-const state = 'begin';
-const config = {
-  showWordAtts: false,
-  showTitles: true,
-  showHeadings: true,
-  showIntroductions: true,
-  showFootnotes: true,
-  showXrefs: true,
-  showParaStyles: true,
-  showCharacterMarkup: true,
-  showChapterLabels: true,
-  showVersesLabels: true,
-  block: { nb: 1 },
-  chapters: [`${documentResult.data.document.cIndexes.shift().chapter}`],
-  selectedBcvNotes: [],
-  displayPartOfText: { state },
-  bcvNotesCallback: (bcv) => {
-    setBcvNoteRef(bcv);
-  },
-  renderers,
-};
-const output = {};
-const context = {};
-const workspace = {};
-let numberToRender = 1;
-try {
-
-  renderer.renderDocument1({
-    docId: documentResult.data.document.id,
-    config,
-    context,
-    workspace,
-    output,
 
 
+
+function ReadingScreen({ onScroll, flatListRef, pk }) {
+  const [bible, setBible] = useState('local_test_1')
+  const [livre, setLivre] = useState('GEN')
+
+
+  let documentQuery = `
+  {
+    document(docSetId: "${bible}" withBook: "${livre}"){
+      id
+      cIndexes {
+        chapter
+      }
+  }}
+  `
+  const documentResult =pk.gqlQuerySync(documentQuery)
+
+
+
+  const renderer = new SofriaRenderFromProskomma({
+    proskomma: pk,
+    actions: sofria2WebActions,
   });
 
-} catch (err) {
-  console.log("Renderer", err);
-  throw err;
-}
+  const state = 'begin';
+  const config = {
+    showWordAtts: false,
+    showTitles: true,
+    showHeadings: true,
+    showIntroductions: true,
+    showFootnotes: true,
+    showXrefs: true,
+    showParaStyles: true,
+    showCharacterMarkup: true,
+    showChapterLabels: true,
+    showVersesLabels: true,
+    block: { nb: 1 },
+    chapters: [`${documentResult.data.document.cIndexes.shift().chapter}`],
+    selectedBcvNotes: [],
+    displayPartOfText: { state },
+    bcvNotesCallback: (bcv) => {
+      setBcvNoteRef(bcv);
+    },
+    renderers,
+  };
+  const output = {};
+  const context = {};
+  const workspace = {};
+  let numberToRender = 1;
+  try {
 
-function ReadingScreen({ onScroll, flatListRef }) {
+    renderer.renderDocument1({
+      docId: documentResult.data.document.id,
+      config,
+      context,
+      workspace,
+      output,
+    });
+
+  } catch (err) {
+    console.log("Renderer", err);
+    throw err;
+  }
+  console.log(output)
   config.displayPartOfText.state = 'continue';
   const [shownParas, setShownParas] = useState(output.paras);
-
-  
   const loadMoreItems = useCallback(() => {
     setShownParas(prevState => {
 
-      if (documentResult.data.document.cIndexes.length != 0) {
+      if (documentResult?.data.document.cIndexes.length != 0) {
         if (config.block.blocks.length < config.block.nb) {
 
           config.chapters = [`${documentResult.data.document.cIndexes.shift().chapter}`];
@@ -176,7 +168,8 @@ function ReadingScreen({ onScroll, flatListRef }) {
           }
         }
 
-    }  });
+      }
+    });
   }, []);
 
   const renderItem = useCallback(({ item }) => item, []);
@@ -185,9 +178,12 @@ function ReadingScreen({ onScroll, flatListRef }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Text>Chapitre 1</Text>
-      <FlatList 
-        style={{ height:'100%',width:'100%' }}
+
+
+      <ConfigDrawer pk={pk} setBibleParent={setBible} bibleParent={bible} livreParent={livre} setLivreParent={setLivre} />
+
+      <FlatList
+        style={{ height: '100%', width: '100%' }}
         removeClippedSubviews={true}
         data={shownParas}
         renderItem={renderItem}
@@ -203,5 +199,5 @@ function ReadingScreen({ onScroll, flatListRef }) {
   );
 }
 
-export { ReadingScreen}
+export { ReadingScreen }
 

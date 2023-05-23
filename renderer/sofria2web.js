@@ -1,4 +1,3 @@
-import { tree2nodes } from "proskomma-core";
 
 const defaultSettings = {
     showWordAtts: false,
@@ -38,12 +37,59 @@ const sofria2WebActions = {
             },
         }
     ],
+    startRow: [
+        {
+            description: "Initialise content stack",
+            test: () => true,
+            action: ({config, context, workspace }) => {
+                const block = context.sequences[0].block;
 
+                if (!context.inTable) {
+                    context.inTable = true
+                   
+                    workspace.paraContentStack = [
+                        {
+                            subType: 'table',
+                            content: []
+                        }
+
+                    ]
+                    config.renderers.table({workspace})
+
+                }
+                workspace.paraContentStack.unshift(
+                    {
+                        subType: block.subType,
+                        content: []
+                    }
+                );
+
+            }
+        },
+    ],
+
+    endRow: [
+        {
+            description: "Add completed table to webParas",
+            test: () => true,
+            action: ({ config, context, workspace }) => {
+
+                config.renderers.row(
+                    {workspace}
+                );
+            }
+        },
+    ],
     startSequence: [
         {
             description: "identity",
             test: () => true,
             action: ({ context, workspace }) => {
+                if (context.inTable) {
+                    context.inTable = false
+                    workspace.paraContentStack[0].content.push(`</table>`)
+                    workspace.webParas.push(workspace.paraContentStack[0].content.join(" "))
+                }
                 workspace.currentSequence.type = context.sequences[0].type;
                 workspace.currentSequence.blocks = [];
             }
@@ -97,6 +143,11 @@ const sofria2WebActions = {
                 !(["footnote"].includes(context.sequences[0].element.subType) && !workspace.settings.showFootnotes) &&
                 !(["xref"].includes(context.sequences[0].element.subType) && !workspace.settings.showXrefs),
             action: (environment) => {
+                if (context.inTable) {
+                    context.inTable = false
+                    workspace.paraContentStack[0].content.push(`</table>`)
+                    workspace.webParas.push(workspace.paraContentStack[0].content.join(" "))
+                }
                 const element = environment.context.sequences[0].element;
 
                 const graftRecord = {
@@ -126,6 +177,11 @@ const sofria2WebActions = {
             description: "Initialise content stack",
             test: () => true,
             action: ({ context, workspace }) => {
+                if (context.inTable) {
+                    context.inTable = false
+                    workspace.paraContentStack[0].content.push(`</table>`)
+                    workspace.webParas.push(workspace.paraContentStack[0].content.join(" "))
+                }
                 const block = context.sequences[0].block;
                 workspace.paraContentStack = [
                     {
@@ -216,8 +272,9 @@ const sofria2WebActions = {
             test: ({ context, workspace }) => !["chapter", "verses"].includes(context.sequences[0].element.subType) && workspace.settings.showCharacterMarkup,
             action: ({ config, workspace }) => {
                 const popped = workspace.paraContentStack.shift();
-                workspace.paraContentStack[0].content.push(config.renderers.wrapper(popped.subType, popped.content));
-            }
+                console.log(popped)
+                
+                workspace.paraContentStack[0].content.push(config.renderers.wrapper(popped.subType==='cell'?popped.atts:{},popped.subType, popped.content));            }
         },
     ],
     startMilestone: [

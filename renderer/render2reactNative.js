@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text } from 'react-native';
 import { renderStyles as rs, ConvertCssToReactNativeStyle } from './renderStyles';
 import { StyleSheet } from 'react-native';
+import { Table, Row, Cell, TableWrapper } from 'react-native-reanimated-table';
 
 
 let convertedStyleSheet = ConvertCssToReactNativeStyle(rs);
@@ -111,7 +112,7 @@ const renderers = {
         )
     },
 
-    wrapper: (subType, content) => <View key={Math.random()} style={getStyles('wrappers', subType)}>{content}</View>,
+    wrapper: (atts,subType, content) =>subType==='cell'?<Cell data="la" />: <View key={Math.random()} style={getStyles('wrappers', subType)}>{content}</View>,
     wWrapper: (atts, content) => Object.keys(atts).length === 0 ?
         content :
 
@@ -142,6 +143,10 @@ const renderers = {
             }
         </View>,
     mergeParas: paras => paras,
+    table :({workspace}) => {console.log(workspace.paraContentStack)},
+    row: ({workspace}) =>{}
+        
+        
 }
 
 export { renderers };

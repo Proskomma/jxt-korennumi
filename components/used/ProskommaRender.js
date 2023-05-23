@@ -13,6 +13,8 @@ class ProskommaRender {
             "startDocument",
             "endDocument",
             "startSequence",
+            "startRow",
+            "endRow",
             "endSequence",
             "unresolvedBlockGraft",
             "blockGraft",

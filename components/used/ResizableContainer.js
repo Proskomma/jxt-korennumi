@@ -9,11 +9,11 @@ const ResizableContainer = ({ children, canExpand = true, initalHeigth=100 }) =>
    const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
 
-    onPanResponderMove: Animated.event([null, { dy: pan.y }], {
+    onPanResponderMove: Animated.event([null, { dx: pan.x }], {
       useNativeDriver: false,
       listener: (event)=> {
-        setHeight(height + pan.y._value)
-        pan.setValue({x:0,y:pan.y._value})
+        setHeight(height + pan.x._value)
+        pan.setValue({x:pan.x._value,y:0})
       }
     }),
     onPanResponderEnd: () => {
@@ -22,14 +22,13 @@ const ResizableContainer = ({ children, canExpand = true, initalHeigth=100 }) =>
   });
 
   return (
-    <View>
+    <View style={{flexDirection:'row'}}>
       <View style={styles.container}>
         <View
           style={{
-            width: '100%',
-            backgroundColor: 'red',
+            height: '100%',
             overflow: 'hidden',
-            height: height,
+            width: height,
             borderRadius: 10,
           }}
         >
@@ -50,8 +49,8 @@ const styles = StyleSheet.create({
   
   box: {
     backgroundColor: '#61dafb',
-    width: '100%',
-    height: 10,
+    height: '100%',
+    width: 10,
     borderRadius: 4,
   },
 });
