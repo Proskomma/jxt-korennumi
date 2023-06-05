@@ -41,12 +41,12 @@ const sofria2WebActions = {
         {
             description: "Initialise content stack",
             test: () => true,
-            action: ({config, context, workspace }) => {
+            action: ({ config, context, workspace }) => {
                 const block = context.sequences[0].block;
 
                 if (!context.inTable) {
                     context.inTable = true
-                   
+
                     workspace.paraContentStack = [
                         {
                             subType: 'table',
@@ -54,7 +54,7 @@ const sofria2WebActions = {
                         }
 
                     ]
-                    config.renderers.table({workspace})
+                    config.renderers.table({ workspace })
 
                 }
                 workspace.paraContentStack.unshift(
@@ -75,7 +75,7 @@ const sofria2WebActions = {
             action: ({ config, context, workspace }) => {
 
                 config.renderers.row(
-                    {workspace}
+                    { workspace }
                 );
             }
         },
@@ -273,8 +273,9 @@ const sofria2WebActions = {
             action: ({ config, workspace }) => {
                 const popped = workspace.paraContentStack.shift();
                 console.log(popped)
-                
-                workspace.paraContentStack[0].content.push(config.renderers.wrapper(popped.subType==='cell'?popped.atts:{},popped.subType, popped.content));            }
+
+                workspace.paraContentStack[0].content.push(config.renderers.wrapper(popped.subType === 'cell' ? popped.atts : {}, popped.subType, popped.content));
+            }
         },
     ],
     startMilestone: [
@@ -322,9 +323,9 @@ const sofria2WebActions = {
                 const element = context.sequences[0].element;
                 //const renderedText = config.renderers.text(element.text);
                 //workspace.paraContentStack[0].content.push(renderedText);
-                element.text.split(" ").map((w,id) => {
-                    
-                    const renderedText = config.renderers.text((id===element.text.split(" ")-1)?w:w+" ")
+                element.text.split(" ").map((w, id) => {
+
+                    const renderedText = config.renderers.text((id === element.text.split(" ") - 1) ? w : w + " ")
                     workspace.paraContentStack[0].content.push(renderedText);
                 })
 

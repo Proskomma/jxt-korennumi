@@ -28,15 +28,17 @@ export default class ExampleFive extends Component {
   }
 
   render() {
+    const test = [<Cell data={<View><Text>caca</Text></View>}></Cell>,
+    <Cell data="2"></Cell>,
+    <Cell data="3"></Cell>]
+    console.log(test)
     const state = this.state;
     return (
       <View style={styles.container}>
         <Table style={{ flexDirection: 'column' }} borderStyle={{ borderWidth: 1 }}>
           
           <TableWrapper style={{ flexDirection: 'row' }}>
-            <Cell data={<View><Text>caca</Text></View>}></Cell>
-            <Cell data="2"></Cell>
-            <Cell data="3"></Cell>
+            {test}
           </TableWrapper>
           <TableWrapper style={{ flexDirection: 'row' }}>
             <Cell data="4"></Cell>

@@ -2,10 +2,10 @@
 import SofriaRenderFromProskomma from '../../used/SofiraRenderFromProskommaNew';
 import sofria2WebActions from '../../../renderer/sofria2web';
 import { renderers } from '../../../renderer/render2reactNative';
-
+import { View } from 'react-native';
 function Tabletest({ pk }) {
 
-  
+
   let documentQuery = `
   {
     documents {
@@ -34,26 +34,26 @@ function Tabletest({ pk }) {
     },
     renderers,
   };
-    let documentResult = pk.gqlQuerySync(documentQuery)
-    documentResult = documentResult.data.documents.filter(d => d.docSetId === '1_web_0')[0]
+  let documentResult = pk.gqlQuerySync(documentQuery)
+  documentResult = documentResult.data.documents.filter(d => d.docSetId === '1_web_0')[0]
 
-    const renderer = new SofriaRenderFromProskomma({
-        proskomma: pk,
-        actions: sofria2WebActions,
-    });
+  const renderer = new SofriaRenderFromProskomma({
+    proskomma: pk,
+    actions: sofria2WebActions,
+  });
 
-    const output = {};
-    const context = {};
-    const workspace = {};
+  const output = {};
+  const context = {};
+  const workspace = {};
 
-    renderer.renderDocument1({
-      docId: documentResult.id,
-      config,
-      context,
-      workspace,
-      output,
-    });
+  renderer.renderDocument1({
+    docId: documentResult.id,
+    config,
+    context,
+    workspace,
+    output,
+  });
 
-    return(output.paras)
-}  
-export {Tabletest}
+  return (<View style={{ flex: 1 }}>{output.paras}</View>)
+}
+export { Tabletest }

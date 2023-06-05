@@ -17,6 +17,8 @@
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "expo": "~48.0.10",
+    "expo-cli": "^6.3.8",
+    "expo-file-system": "~15.2.2",
     "expo-screen-orientation": "~5.1.1",
     "expo-status-bar": "~1.4.4",
     "fs": "^0.0.1-security",
@@ -40,8 +42,7 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.18.10",
     "react-resizable": "^3.0.5",
-    "react-sidebar": "^3.0.2",
-    "expo-file-system": "~15.2.2"
+    "react-sidebar": "^3.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

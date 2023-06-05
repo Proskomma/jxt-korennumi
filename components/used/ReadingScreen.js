@@ -21,9 +21,8 @@ function multipleReplace(query, tabl) {
 
 
 
-function ReadingScreen({ onScroll, flatListRef, pk }) {
-  const [bible, setBible] = useState('local_test_1')
-  const [livre, setLivre] = useState('GEN')
+function ReadingScreen({ livre, bible, flatListRef, pk }) {
+
 
 
   let documentQuery = `
@@ -35,13 +34,14 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
       }
   }}
   `
-  const documentResult =pk.gqlQuerySync(documentQuery)
+  const documentResult = pk.gqlQuerySync(documentQuery)
 
 
 
   const renderer = new SofriaRenderFromProskomma({
     proskomma: pk,
     actions: sofria2WebActions,
+
   });
 
   const state = 'begin';
@@ -56,7 +56,7 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
     showCharacterMarkup: true,
     showChapterLabels: true,
     showVersesLabels: true,
-    block: { nb: 1 },
+    nbBlock: 1,
     chapters: [`${documentResult.data.document.cIndexes.shift().chapter}`],
     selectedBcvNotes: [],
     displayPartOfText: { state },
@@ -83,16 +83,15 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
     console.log("Renderer", err);
     throw err;
   }
-  console.log(output)
   config.displayPartOfText.state = 'continue';
   const [shownParas, setShownParas] = useState(output.paras);
   const loadMoreItems = useCallback(() => {
     setShownParas(prevState => {
 
       if (documentResult?.data.document.cIndexes.length != 0) {
-        if (config.block.blocks.length < config.block.nb) {
+        if (workspace.blockId.length < config.nbBlock) {
 
-          config.chapters = [`${documentResult.data.document.cIndexes.shift().chapter}`];
+          workspace.chapters = [`${documentResult.data.document.cIndexes.shift().chapter}`];
           renderer.renderDocument1({
             docId: documentResult.data.document.id,
             config,
@@ -101,7 +100,7 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
             output
           });
 
-          return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
+          return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.nbBlock)]
         }
         else {
 
@@ -113,11 +112,11 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
             output
           });
 
-          return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
+          return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.nbBlock)]
         }
       }
       else {
-        if (config.block.blocks.length < config.block.nb) {
+        if (workspace.blockId.length < config.nbBlock) {
           renderer.renderDocument1({
             docId: documentResult.data.document.id,
             config,
@@ -126,7 +125,7 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
             output
           });
 
-          return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
+          return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.nbBlock)]
         }
         else {
 
@@ -137,13 +136,13 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
             workspace,
             output
           });
-          if (config.block.blocks.length === 0) {
+          if (workspace.blockId.length === 0) {
             return [sh]
 
           }
-          if (config.block.blocks.length < config.block.nb) {
+          if (workspace.blockId.length < config.nbBlock) {
 
-            config.chapters = [`${documentResult.data.document.cIndexes.shift().chapter}`];
+            workspace.chapters = [`${documentResult.data.document.cIndexes.shift().chapter}`];
             renderer.renderDocument1({
               docId: documentResult.data.document.id,
               config,
@@ -152,7 +151,7 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
               output
             });
 
-            return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
+            return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.nbBlock)]
           }
           else {
 
@@ -164,7 +163,7 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
               output
             });
 
-            return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.block.nb)]
+            return [...shownParas, ...output.paras.slice(shownParas.length, shownParas.length + config.nbBlock)]
           }
         }
 
@@ -178,10 +177,6 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
 
   return (
     <View style={{ flex: 1 }}>
-
-
-      <ConfigDrawer pk={pk} setBibleParent={setBible} bibleParent={bible} livreParent={livre} setLivreParent={setLivre} />
-
       <FlatList
         style={{ height: '100%', width: '100%' }}
         removeClippedSubviews={true}
@@ -189,7 +184,6 @@ function ReadingScreen({ onScroll, flatListRef, pk }) {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ref={flatListRef}
-        onScroll={onScroll}
         onEndReached={loadMoreItems}
         scrollEventThrottle={16} // Add scrollEventThrottle for better performance
         onEndReachedThreshold={0.8} // Trigger loadMoreItems when the user reaches 50% from the end

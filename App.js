@@ -5,14 +5,12 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as ScreenOrientation from "expo-screen-orientation";
-import ConfigDrawer from "./components/used/TextConfig/configDrawer";
-import * as FileSystem from 'expo-file-system';
-import ExampleFive from './components/proofOfConcept/tableTest/test';
 const { Proskomma } = require('proskomma-core');
+import { CheckboxMe } from './components/used/TextConfig/CheckBox';
 const succinct = require('./succinct/test.json');
 const succinct2 = require('./succinct/fnT.json');
 import { Tabletest } from './components/proofOfConcept/tableTest/tableTest';
-const {usfm} = require('/mat')
+const { usfm } = require('./components/proofOfConcept/tableTest/mat')
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -36,9 +34,9 @@ export default function App() {
   pk.loadSuccinctDocSet(succinct);
   pk.loadSuccinctDocSet(succinct2);
 
-  pk.importDocument({  'source': '1', 'project': 'web', 'revision':'0'  }, 'usfm', usfm);
+  pk.importDocument({ 'source': '1', 'project': 'web', 'revision': '0' }, 'usfm', usfm);
 
-    
+
 
   function AnotherScreen() {
     return (
@@ -82,13 +80,14 @@ export default function App() {
         <Tab.Screen
           name="ReadingScreen" options={{
             tabBarIcon: ({ color, size }) => (
-              <FontAwesomeIcon name="book" color={color} size={size} />)}}>
-               {() => <ConfigDrawer pk={pk} />}
-               </Tab.Screen>
-      <Tab.Screen name="resizableTab">
-        {() => <ResizableTab pk={pk} />}
-      </Tab.Screen>
-    </Tab.Navigator>
+              <FontAwesomeIcon name="book" color={color} size={size} />)
+          }}>
+          {() => <CheckboxMe />}
+        </Tab.Screen>
+        <Tab.Screen name="resizableTab">
+          {() => <ResizableTab pk={pk} />}
+        </Tab.Screen>
+      </Tab.Navigator>
     </NavigationContainer >
   );
 }

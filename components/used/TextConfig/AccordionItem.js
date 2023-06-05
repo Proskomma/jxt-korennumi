@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faChevronDown,faCircleChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faCircleChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 library.add(faChevronDown)
@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
   accordContainer: {
     padding: 10,
     width: '70%',
+
 
   },
   accordHeader: {
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
     borderColor: 'grey',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    
+
   },
   accordHeaderDisable: {
     padding: 12,
@@ -61,10 +62,10 @@ const styles = StyleSheet.create({
   accordBody: {
     padding: 12,
     backgroundColor: 'ghostwhite',
-    borderWidth:1,
+    borderWidth: 1,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
-    borderTopWidth:0
+    borderTopWidth: 0
   },
   textSmall: {
     fontSize: 16
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
 function AccordionItem({ children, title, disable }) {
   const [expanded, setExpanded] = useState(false);
   useEffect(() => {
-    if(disable){
+    if (disable) {
       setExpanded(false)
     }
   }, [disable]);
@@ -90,11 +91,11 @@ function AccordionItem({ children, title, disable }) {
 
   return (
     disable ?
-    <View style={styles.accordContainer}>
+      <View style={styles.accordContainer}>
         <View style={styles.accordHeaderDisable}>
           <Text style={styles.accordTitle}>{title}</Text>
           <FontAwesomeIcon icon={expanded ? faChevronDown : faCircleChevronUp} size={20} color="black" />
-      </View></View>
+        </View></View>
       :
       <View style={styles.accordContainer}>
         <TouchableOpacity style={expanded ? styles.accordHeaderDisplay : styles.accordHeader} onPress={toggleItem}>

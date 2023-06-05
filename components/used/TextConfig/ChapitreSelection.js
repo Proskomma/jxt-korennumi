@@ -1,7 +1,15 @@
 import { Text, Checkbox } from 'react-native-paper';
 import { useCallback, useEffect, useState, useReducer } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { Dimensions } from 'react-native';
+import * as ScreenOrientation from "expo-screen-orientation";
 
+console.log(ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT)
+
+library.add(faCheckSquare);
 export const checkboxesReducer = (state, action) => {
   switch (action.type) {
     case 'toggle':
@@ -12,12 +20,12 @@ export const checkboxesReducer = (state, action) => {
 };
 
 function ChapitreSelection({ pk, bible, livre, chapitre, setChapitre }) {
-  if(bible === 'null' || livre === 'null'){
+  if (bible === 'null' || livre === 'null') {
 
     return <Text>can't render</Text>
   }
   const [checkboxes, dispatch] = useReducer(checkboxesReducer, chapitre.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
-  
+
   const toggleCheckbox = useCallback((id) => {
     dispatch({ type: 'toggle', id })
     if (checkboxes[id]) {
@@ -37,7 +45,7 @@ function ChapitreSelection({ pk, bible, livre, chapitre, setChapitre }) {
           }
         }
       }`
-  );  
+  );
   const [data, setData] = useState(chapters?.data?.docSet.document?.cvIndexes?.map((doc, id) => ({
     id: (id + 1).toString(), // start IDs from 1
     num: doc.chapter,
@@ -57,10 +65,10 @@ function ChapitreSelection({ pk, bible, livre, chapitre, setChapitre }) {
         <View style={styles.checkboxContainer}>
           <Text style={styles.centeredText}>{num}</Text>
           <View style={styles.centeredCheckbox}>
-            <Checkbox
-              status={checkboxes[id] ? 'checked' : 'unchecked'}
-              onPress={() => toggleCheckbox(id)}
-            />
+            <TouchableOpacity style={{ borderWidth: 2, width: 24, height: 24, }} onPress={() => toggleCheckbox(id)}>
+              {checkboxes[id] ? <View><FontAwesomeIcon icon={faCheckSquare} size={20} color="blue" /></View>
+                : <></>}
+            </TouchableOpacity>
           </View>
         </View>
       );
@@ -68,13 +76,17 @@ function ChapitreSelection({ pk, bible, livre, chapitre, setChapitre }) {
     [toggleCheckbox, checkboxes]
   );
 
+
+  const windowHeight = Dimensions.get('window').height;
+  const numCol = Math.floor((windowHeight * 0.4) / 20)
+
   const keyExtractor = useCallback((item) => `chap-${item.id}`, []);
 
   if (data.length > 0) {
     return (
       <FlatList
         data={data}
-        numColumns={3}
+        numColumns={numCol}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
       />

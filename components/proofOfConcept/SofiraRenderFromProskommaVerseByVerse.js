@@ -440,7 +440,9 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                         this.renderEvent('mark', environment);
                         environment.context.sequences[0].element = wrapper;
                     } else {
-                        this.renderEvent('endWrapper', environment);
+                        fontWeight: 'bold',
+
+                            this.renderEvent('endWrapper', environment);
                         environment.context.sequences[0].block.wrappers.shift();
                         delete environment.context.sequences[0].element;
                         this.currentCV[scopeBits[0]] = null;
@@ -458,7 +460,30 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                         this.renderEvent('mark', environment);
                         delete environment.context.sequences[0].element;
                     }
-                } else if (scopeBits[0] === 'span') {
+
+                } else if (scopeBits[0] === 'cell') {
+                    console.log('ici')
+                    const wrapper = {
+                        direction: "start",
+                        type: "wrapper",
+                        subType: scopeBits[0],
+                        atts: {
+                            role: scopeBits[1],
+                            alignment: scopeBits[2],
+                            nCols: parseInt(scopeBits[3])
+                        }
+                    };
+                    environment.context.sequences[0].element = wrapper;
+                    if (item.subType === 'start') {
+                        environment.context.sequences[0].block.wrappers.unshift(wrapper.subType);
+                        this.renderEvent('startWrapper', environment);
+                    } else {
+                        this.renderEvent('endWrapper', environment);
+                        environment.context.sequences[0].block.wrappers.shift();
+                    }
+                    delete environment.context.sequences[0].element;
+                }
+                else if (scopeBits[0] === 'span') {
                     const wrapper = {
                         type: "wrapper",
                         subType: `usfm:${scopeBits[1]}`,
