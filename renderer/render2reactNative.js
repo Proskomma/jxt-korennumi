@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text } from 'react-native';
 import { renderStyles as rs, ConvertCssToReactNativeStyle } from './renderStyles';
 import { StyleSheet } from 'react-native';
+import { Table, Cell, TableWrapper } from 'react-native-reanimated-table';
 
 
 let convertedStyleSheet = ConvertCssToReactNativeStyle(rs);
@@ -46,7 +47,7 @@ function InlineElement(props) {
                 marginRight: 4,
                 marginLeft: 4,
                 marginTop: 15,
-                padding:2,
+                padding: 2,
                 backgroundColor: "#CCC"
             }}
             onPress={toggleDisplay}
@@ -56,7 +57,7 @@ function InlineElement(props) {
     }
 }
 const renderers = {
-    text: text => {return (<View key={Math.random()} style={{ paddingTop: 20 }}><Text >{text}</Text></View>) },
+    text: text => { return (<View key={Math.random()} style={{ paddingTop: 20 }}><Text >{text}</Text></View>) },
     chapter_label: number => <View key={Math.random()} ><Text style={{
         ...getStyles('marks', "chapter_label"),
     }}>{number}</Text></View>,
@@ -80,18 +81,18 @@ const renderers = {
     ,
     paragraph: (subType, content, footnoteNo) => {
         let TitleContent = {};
-        
+
         if (["usfm:mt", "usfm:s"].includes(subType)) {
             const updatedContent = content.map((element) => {
-              const updatedChildren = React.Children.map(element.props.children, (child, index) => {
-                
-                  return React.cloneElement(child, { style: { ...getStyles('paras', subType), display: 'flex', flexDirection: 'column' } });
-        
-              });
-              return React.cloneElement(element, {}, updatedChildren);
+                const updatedChildren = React.Children.map(element.props.children, (child, index) => {
+
+                    return React.cloneElement(child, { style: { ...getStyles('paras', subType), display: 'flex', flexDirection: 'column' } });
+
+                });
+                return React.cloneElement(element, {}, updatedChildren);
             });
             TitleContent = updatedContent;
-          }
+        }
         return (
 
             ["usfm:f", "usfm:x"].includes(subType) ?
@@ -102,7 +103,7 @@ const renderers = {
                     {content}
                 </InlineElement> :
                 ["usfm:mt", "usfm:s"].includes(subType) ?
-                <View style={{flexDirection:'row'}}>{TitleContent}</View>:
+                    <View style={{ flexDirection: 'row' }}>{TitleContent}</View> :
                     <View key={`paragraph ${Math.random()}  `} style={{ ...getStyles('paras', subType), flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start' }}>
                         {content}
                     </View>
@@ -111,7 +112,20 @@ const renderers = {
         )
     },
 
-    wrapper: (subType, content) => <View key={Math.random()} style={getStyles('wrappers', subType)}>{content}</View>,
+    wrapper: (atts, subType, content) => {
+        const updatedContent = content.map((element) => {
+            return React.cloneElement(element, { style: { paddingTop: 0 } });
+        });
+        return (
+            subType === 'cell' ?
+                atts.role === 'body' ?
+                    <Cell textStyle={{ textAlign: atts.alignment }}
+                        data={updatedContent} />
+                    :
+                    <Cell textStyle={{ fontWeight: 'bold', textAlign: atts.alignment }} data={updatedContent} />
+                :
+                <View key={Math.random()} style={getStyles('wrappers', subType)}>{updatedContent}</View>)
+    },
     wWrapper: (atts, content) => Object.keys(atts).length === 0 ?
         content :
 
@@ -142,6 +156,8 @@ const renderers = {
             }
         </View>,
     mergeParas: paras => paras,
+    table: (content) => <View style={{ flex: 1 }}><Table borderStyle={{ borderWidth: 1 }} style={{ flexDirection: "column" }}>{content}</Table></View>,
+    row: (content) => <TableWrapper style={{ flexDirection: "row" }}>{content}</TableWrapper>
 }
 
 export { renderers };
