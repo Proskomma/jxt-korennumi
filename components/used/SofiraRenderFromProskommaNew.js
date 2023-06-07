@@ -158,6 +158,7 @@ class SofriaRenderFromProskomma extends ProskommaRender {
             if (environment.workspace.blockId) {
                 blocksIdsToRender = environment.workspace.blockId
 
+
             }
         }
 

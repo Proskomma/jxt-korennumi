@@ -143,11 +143,7 @@ const sofria2WebActions = {
                 !(["footnote"].includes(context.sequences[0].element.subType) && !workspace.settings.showFootnotes) &&
                 !(["xref"].includes(context.sequences[0].element.subType) && !workspace.settings.showXrefs),
             action: (environment) => {
-                if (context.inTable) {
-                    context.inTable = false
-                    workspace.paraContentStack[0].content.push(`</table>`)
-                    workspace.webParas.push(workspace.paraContentStack[0].content.join(" "))
-                }
+
                 const element = environment.context.sequences[0].element;
 
                 const graftRecord = {
@@ -272,7 +268,6 @@ const sofria2WebActions = {
             test: ({ context, workspace }) => !["chapter", "verses"].includes(context.sequences[0].element.subType) && workspace.settings.showCharacterMarkup,
             action: ({ config, workspace }) => {
                 const popped = workspace.paraContentStack.shift();
-                console.log(popped)
 
                 workspace.paraContentStack[0].content.push(config.renderers.wrapper(popped.subType === 'cell' ? popped.atts : {}, popped.subType, popped.content));
             }

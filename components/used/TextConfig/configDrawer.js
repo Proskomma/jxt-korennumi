@@ -44,6 +44,7 @@ const ConfigDrawer = ({ pk, setIsActive, isActive, setBibleParent, bibleParent, 
 
     useEffect(() => {
         setChapitre([]);
+        setButton(true)
     }, [livre]);
 
     useEffect(() => {

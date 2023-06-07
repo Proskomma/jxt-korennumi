@@ -6,13 +6,13 @@ import ConfigDrawer from './TextConfig/configDrawer'
 import { Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet } from 'react-native';
-import TrucAutre from './trucAutre';
+import TextChanger from './TextChanger';
 
 function createRefsArray(length) {
   return Array.from({ length }, () => useRef(null));
 }
 function ResizableTab({ pk }) {
-  const numberText = 3;
+  const numberText = 1;
   const arrayHooks = [];
   const flatListRefs = createRefsArray(numberText);
 
@@ -59,7 +59,7 @@ function ResizableTab({ pk }) {
         div={numberText}
       >
 
-        <TrucAutre pk={pk} flatListRef={flatListRefs[index]} />
+        <TextChanger pk={pk} flatListRef={flatListRefs[index]} />
       </ResizableContainer >
 
     )

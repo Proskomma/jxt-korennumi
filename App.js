@@ -11,6 +11,9 @@ const succinct = require('./succinct/test.json');
 const succinct2 = require('./succinct/fnT.json');
 import { Tabletest } from './components/proofOfConcept/tableTest/tableTest';
 const { usfm } = require('./components/proofOfConcept/tableTest/mat')
+import { ReadingScreen } from './components/used/ReadingScreen';
+import TextChanger from './components/used/TextChanger';
+
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -33,22 +36,10 @@ export default function App() {
   ]);
   pk.loadSuccinctDocSet(succinct);
   pk.loadSuccinctDocSet(succinct2);
-
   pk.importDocument({ 'source': '1', 'project': 'web', 'revision': '0' }, 'usfm', usfm);
 
 
-
-  function AnotherScreen() {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <TouchableOpacity onPress={() =>
-          changeOrientation(ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT)
-        }><Text>Another Tab!</Text></TouchableOpacity>
-      </View>
-    );
-  }
-
-  const [orientation, setOrientation] = useState(null);
+  /*const [orientation, setOrientation] = useState(null);
   useEffect(() => {
     checkOrientation();
     const subscription = ScreenOrientation.addOrientationChangeListener(
@@ -69,6 +60,7 @@ export default function App() {
   const handleOrientationChange = (o) => {
     setOrientation(o.orientationInfo.orientation);
   };
+  */
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -77,6 +69,9 @@ export default function App() {
           headerShown: false,
 
         }}>
+        <Tab.Screen name="resizableTab">
+          {() => <TextChanger pk={pk} />}
+        </Tab.Screen>
         <Tab.Screen
           name="ReadingScreen" options={{
             tabBarIcon: ({ color, size }) => (
@@ -84,9 +79,7 @@ export default function App() {
           }}>
           {() => <CheckboxMe />}
         </Tab.Screen>
-        <Tab.Screen name="resizableTab">
-          {() => <ResizableTab pk={pk} />}
-        </Tab.Screen>
+
       </Tab.Navigator>
     </NavigationContainer >
   );
