@@ -93,14 +93,14 @@ function AccordionItem({ children, title, disable }) {
     disable ?
       <View style={styles.accordContainer}>
         <View style={styles.accordHeaderDisable}>
-          <Text style={styles.accordTitle}>{title}</Text>
-          <FontAwesomeIcon icon={expanded ? faChevronDown : faCircleChevronUp} size={20} color="black" />
+          <Text key={Math.random()} style={styles.accordTitle}>{title}</Text>
+          <FontAwesomeIcon key={Math.random()} icon={expanded ? faChevronDown : faCircleChevronUp} size={20} color="black" />
         </View></View>
       :
       <View style={styles.accordContainer}>
-        <TouchableOpacity style={expanded ? styles.accordHeaderDisplay : styles.accordHeader} onPress={toggleItem}>
-          <Text style={styles.accordTitle}>{title}</Text>
-          <FontAwesomeIcon icon={expanded ? faChevronDown : faCircleChevronUp} size={20} color="black" />
+        <TouchableOpacity key={Math.random()} style={expanded ? styles.accordHeaderDisplay : styles.accordHeader} onPress={toggleItem}>
+          <Text key={Math.random()} style={styles.accordTitle}>{title}</Text>
+          <FontAwesomeIcon key={Math.random()} icon={expanded ? faChevronDown : faCircleChevronUp} size={20} color="black" />
         </TouchableOpacity>
         {expanded && body}
       </View>

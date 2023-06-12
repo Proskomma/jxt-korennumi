@@ -10,8 +10,8 @@ library.add(faGear);
 
 import ConfigDrawer from "./TextConfig/configDrawer"
 function TextChanger({ pk, flatListRef }) {
-    const [bible, setBible] = useState('local_test_1')
-    const [livre, setLivre] = useState('GEN')
+    const [bible, setBible] = useState('local_fnT_1')
+    const [livre, setLivre] = useState('TIT')
     const [isActive, setIsActive] = useState(false)
     return (
         <>

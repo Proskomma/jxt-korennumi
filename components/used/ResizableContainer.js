@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, PanResponder, StyleSheet, Animated } from 'react-native';
 
 const ResizableContainer = ({ children, canExpand = true, initialWidth }) => {
   const [width, setWidth] = useState(initialWidth);
-  console.log(initialWidth)
+  useEffect(() => { setWidth(initialWidth) }, [initialWidth])
   const pan = useRef(new Animated.ValueXY()).current;
 
   const panResponder = PanResponder.create({

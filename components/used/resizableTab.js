@@ -6,15 +6,19 @@ import ConfigDrawer from './TextConfig/configDrawer'
 import { Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet } from 'react-native';
-import TextChanger from './TextChanger';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
+import { faMinus } from '@fortawesome/free-solid-svg-icons/faMinus';
 
-function createRefsArray(length) {
-  return Array.from({ length }, () => useRef(null));
-}
+library.add(faPlus);
+library.add(faMinus);
+import TextChanger from './TextChanger';
+import { initial } from 'lodash';
+
 function ResizableTab({ pk }) {
-  const numberText = 1;
+
+  const [numberText, setNumberOfText] = useState(1);
   const arrayHooks = [];
-  const flatListRefs = createRefsArray(numberText);
 
   /*
   const [isUserScroll, setIsUserScroll] = useState(true);
@@ -45,33 +49,54 @@ function ResizableTab({ pk }) {
 
 
   const resizableContainers = Array.from({ length: numberText }, (_, index) => {
-
-    const [isActive, setIsActive] = useState(false)
-    const [bible, setBible] = useState('local_test_1')
-    const [livre, setLivre] = useState('GEN')
     console.log(Dimensions.get('window').width * (1 / numberText))
-    arrayHooks.push([isActive, setIsActive, bible, setBible, livre, setLivre])
     return (
       <ResizableContainer
         key={`resizable-container-${index}`}
         initialWidth={Dimensions.get('window').width * (1 / numberText)}
-        canExpand={numberText - 1 === index ? false : true}
+        canExpand={numberText - 1 === index ? false : true
+        }
         div={numberText}
       >
 
-        <TextChanger pk={pk} flatListRef={flatListRefs[index]} />
+        <TextChanger pk={pk} />
       </ResizableContainer >
 
     )
   });
 
-  return <View style={{ flex: 1 }}>
-    <View style={{
-      flexDirection: 'row', flex: 1, alignContent: 'space-between', position: 'relative'
-    }}>
-      {resizableContainers}
-    </View>
-  </View >;
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={{
+        flexDirection: 'row', flex: 1, alignContent: 'space-between', position: 'relative'
+      }}>
+        {resizableContainers}
+      </View>
+      <View style={{ position: 'absolute', right: 20, zIndex: 3 }}>
+        {numberText === 1 ?
+          <>
+            <Button key={Math.random()} style={{ position: 'absolute', right: 50, zIndex: 3 }}
+              icon={() => <Icon name="minus" size={20} color="grey" />
+              }
+              onPress={() => { }} />
+            <Button key={Math.random()} style={{ position: 'absolute', right: 0, zIndex: 3 }}
+              icon={() => <Icon name="plus" size={20} color="blue" />
+              }
+              onPress={() => setNumberOfText(numberText + 1)} /></> : <>
+            <Button key={Math.random()} style={{ position: 'absolute', right: 50, zIndex: 3 }}
+              icon={() => <Icon name="minus" size={20} color="blue" />
+              }
+              onPress={() => setNumberOfText(numberText - 1)} />
+            <Button key={Math.random()} style={{ position: 'absolute', right: 0, zIndex: 3 }}
+              icon={() => <Icon name="plus" size={20} color="blue" />
+              }
+              onPress={() => setNumberOfText(numberText + 1)} /></>
+        }
+
+
+      </View>
+
+    </View >);
 }
 
 export { ResizableTab };

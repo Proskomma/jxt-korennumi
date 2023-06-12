@@ -1,25 +1,20 @@
-import { queryOneDocument } from '../../graphql/Query/query';
-import { View, ScrollView, Text, StatusBar, FlatList } from 'react-native';
-import SofriaRenderFromProskomma from './SofiraRenderFromProskommaNew';
-import sofria2WebActions from '../../renderer/sofria2web';
-import { renderers } from '../../renderer/render2reactNative';
+import { View, FlatList } from 'react-native';
 import React, { useState, useCallback, useEffect } from 'react';
-import ConfigDrawer from './TextConfig/configDrawer';
-import { useDocumentQuery, useRenderDocument } from '../../customHooks/RendererHooks';
+import { useDocumentQuery } from '../../customHooks/useDocumentQuery';
+import { useRenderDocument } from '../../customHooks/useRenderDocument';
 function ReadingScreen({ livre, bible, pk }) {
 
   const [data, setData] = useState([])
 
   const documentResult = useDocumentQuery(livre, bible, pk)
-  const output = useRenderDocument(documentResult, pk, renderers, SofriaRenderFromProskomma, sofria2WebActions, setData)
+  const output = useRenderDocument(documentResult, pk, setData)
   const renderItem = useCallback(({ item }) => item, []);
-  const keyExtractor = useCallback((item, index) => `para-${index}-${livre}-${bible}`, [livre, bible]);
+  const keyExtractor = useCallback((item, index) => `para-${index}-${item}-${livre}-${bible}`, [livre, bible]);
   const loadMoreItems = useCallback(() => {
-    console.log([...data, ...output.paras.slice(data.length, data.length + 4)].length),
 
-      setData([...data, ...output.paras.slice(data.length, data.length + 4)])
+    setData([...data, ...output.paras.slice(data.length, data.length + 4)])
   })
-
+  console.log(data)
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -31,7 +26,7 @@ function ReadingScreen({ livre, bible, pk }) {
         //ref={flatListRef}
         onEndReached={loadMoreItems}
         scrollEventThrottle={16} // Add scrollEventThrottle for better performance
-        onEndReachedThreshold={0.8} // Trigger loadMoreItems when the user reaches 50% from the end
+        onEndReachedThreshold={0.8} // Tr igger loadMoreItems when the user reaches 50% from the end
       />
     </View>
   );

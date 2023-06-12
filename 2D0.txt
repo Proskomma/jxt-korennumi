@@ -1,17 +1,33 @@
 
-Renderer:
-WrapFlex for titles
+
+to DO :
+    - Renderer:
+        - global key for key error
+        - Using proskomma.json.tools 
+        - InlineElement wrap
+    - App:
+        - (1 ConfigDrawer for all texts )
+        - Home TAb
+        - Choice of option (steal archraf work if possible)
 
 
-App:
-Rework all the rezizableTab for performance issues  
-1 ConfigDrawer for all texts 
-changing text with ConfigDrawer
-add +/- button of rezizableTab
-Last text it clamp to the end of the window
-Changing orientation = changing bottom TAB to side TAb
-Home TAb
-Choice of option (steal archraf work if possible)
+
+
+
+DONE:
+    -Renderer:
+        -WrapFlex for titles
+
+    - App :
+        - Rework all the rezizableTab for performance issues  
+        - changing text with ConfigDrawer
+        - add +/- button of rezizableTab
+        - Last text it clamp to the end of the window
+        - changing bottom TAB to side TAb to Drawer for more Text visibility
+
+
+
+
 
 
 

@@ -69,10 +69,10 @@ export default function App() {
           headerShown: false,
 
         }}>
-        <Tab.Screen name="resizableTab">
-          {() => <TextChanger pk={pk} />}
+        <Tab.Screen key={Math.random()} name="resizableTab">
+          {() => <ResizableTab pk={pk} />}
         </Tab.Screen>
-        <Tab.Screen
+        <Tab.Screen key={Math.random()}
           name="ReadingScreen" options={{
             tabBarIcon: ({ color, size }) => (
               <FontAwesomeIcon name="book" color={color} size={size} />)
