@@ -3,8 +3,10 @@ import SofriaRenderFromProskomma from '../components/used/SofiraRenderFromProsko
 import sofria2WebActions from '../renderer/sofria2web';
 import { renderers } from '../renderer/render2reactNative';
 
-function useRenderDocument(documentResult, pk, setData) {
+function useRenderDocument(documentResult, pk, setData, livre, bible) {
     const [output, setOutput] = useState({})
+    let workspace = { textRef: `${bible}_${livre}_` }
+    let context = {}
     useEffect(() => {
         if (documentResult) {
 
@@ -37,17 +39,20 @@ function useRenderDocument(documentResult, pk, setData) {
 
             try {
 
-                renderer.renderDocument({
+                renderer.renderDocument1({
                     docId: documentResult.data.document.id,
                     config,
                     output,
+                    workspace,
+                    context,
+
                 });
 
             } catch (err) {
                 console.log("Renderer", err);
                 throw err;
             }
-            setData(output.paras.slice(0, 7))
+            setData(output.paras.slice(0, 20))
         }
     }, [documentResult])
     return output

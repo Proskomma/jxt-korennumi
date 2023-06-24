@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { renderStyles as rs, ConvertCssToReactNativeStyle } from './renderStyles';
 import { StyleSheet } from 'react-native';
 import { Table, Cell, TableWrapper } from 'react-native-reanimated-table';
-
-
+import { updateState } from '../components/used/personalNote/stateManager';
+import { retrieveData, SyncGet } from '../components/used/personalNote/NoteChangerFunction';
 let convertedStyleSheet = ConvertCssToReactNativeStyle(rs);
 const styles = StyleSheet.create(convertedStyleSheet);
 
@@ -66,11 +66,38 @@ function InlineElement(props) {
     }
 }
 const renderers = {
-    text: (text, id) => { ; return (<View key={`text_${Math.random()}`} style={{ paddingTop: 20 }}><Text >{text}</Text></View>) },
-    chapter_label: number => <View key={Math.random()} ><Text style={{
+    text: ({ word, idWord, textRef }) => {
+        let styles = {}
+        if (idWord === 4) {
+            console.log(word)
+            console.log(SyncGet(`${textRef}current`))
+            retrieveData(`${textRef}current`).then(result => {
+                if (result.data[idWord]) {
+                    console.log(result.data[idWord])
+                    styles = { backgroundColor: 'yellow' }
+                    console.log(styles)
+                }
+            })
+            console.log(styles)
+
+        }
+        if (JSON.stringify(styles) != JSON.stringify({})) {
+            console.log('ici')
+        }
+        return (
+            <View key={`text_${idWord}`} style={{ paddingTop: 20 }}>
+                <Text
+                    style={styles}
+                    onPress={(event) => { updateState([true, event, idWord]) }}>
+                    {word}
+                </Text>
+            </View>
+        )
+    },
+    chapter_label: (number, id) => <View key={`chapter_label_${id}`} ><Text style={{
         ...getStyles('marks', "chapter_label"),
     }}>{number}</Text></View>,
-    verses_label: (number, bcv, bcvCallback) =>
+    verses_label: (number, bcv, bcvCallback, id) =>
         bcv && bcv.length === 3 ?
             <Text
                 onClick={() => bcvCallback(bcv)} style={{
@@ -81,20 +108,20 @@ const renderers = {
             >
                 {number}
             </Text> :
-            <View key={Math.random()} style={{ flexDirection: 'row', paddingTop: 10 }}>
+            <View key={`versesLabel_${id}`} style={{ flexDirection: 'row', paddingTop: 10 }}>
                 <Text style={{
                     ...getStyles('marks', "verses_label"),
                     marginRight: 10,
                 }}>
                     {number}</Text></View>
     ,
-    paragraph: (subType, content, footnoteNo) => {
+    paragraph: (subType, content, footnoteNo, id) => {
         let TitleContent = {};
 
         if (["usfm:mt", "usfm:s"].includes(subType)) {
             const updatedContent = content.map((element, index) => {
                 const updatedChildren = React.Children.map(element.props.children, (child, childIndex) => {
-                    return React.cloneElement(child, { style: { ...getStyles('paras', subType), display: 'flex', flexDirection: 'column', key: `title_subTitle_${index}_${childIndex}` } });
+                    return React.cloneElement(child, { style: { ...getStyles('paras', subType), display: 'flex', flexDirection: 'column' }, key: `title_subTitle_${index}_${childIndex}` });
                 });
                 return React.cloneElement(element, { key: element.key || `parent_${index}` }, updatedChildren);
             });
@@ -104,15 +131,16 @@ const renderers = {
 
             ["usfm:f", "usfm:x"].includes(subType) ?
                 <InlineElement
-                    key={`inline${Math.random()}`}
+                    key={`paragraph_${id}`}
                     style={getStyles('paras', subType)}
                     linkText={subType === "usfm:f" ? `${footnoteNo}` : "*"}
                 >
                     {content}
                 </InlineElement> :
                 ["usfm:mt", "usfm:s"].includes(subType) ?
-                    <View key={`title ${Math.random()} `} style={{ flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start', }}>{TitleContent}</View> :
-                    <View key={`title ${Math.random()} `} style={{ ...getStyles('paras', subType), flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start' }}>
+                    <View key={`paraphraphe_${id} `} style={{ flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start', }}>{TitleContent}</View>
+                    :
+                    <View key={`parapgraphe_${id} `} style={{ ...getStyles('paras', subType), flexWrap: 'wrap', flexDirection: 'row', alignItems: 'flex-start' }}>
                         {content}
                     </View>
 
@@ -120,28 +148,28 @@ const renderers = {
         )
     },
 
-    wrapper: (atts, subType, content) => {
+    wrapper: (atts, subType, content, id) => {
         const updatedContent = content.map((element, index) => {
             return React.cloneElement(element, { style: { paddingTop: 0 }, key: `wrapper_content_${index} ` });
         });
         if (["usfm:f", "usfm:ft", "usfm:fr"].includes(subType)) {
-            return (<View key={`wrapper_${Math.random()}`} style={{ ...getStyles('wrappers', subType), flexDirection: 'row' }}>{updatedContent}</View>)
+            return (<View key={`wrapper_${id}`} style={{ ...getStyles('wrappers', subType), flexDirection: 'row' }}>{updatedContent}</View>)
 
         }
         return (
             subType === 'cell' ?
                 atts.role === 'body' ?
-                    <Cell key={`cell_${Math.random()}`} textStyle={{ textAlign: atts.alignment }}
+                    <Cell key={`cell_${id}`} textStyle={{ textAlign: atts.alignment }}
                         data={updatedContent} />
                     :
-                    <Cell key={`cell_${Math.random()}`} textStyle={{ fontWeight: 'bold', textAlign: atts.alignment }} data={updatedContent} />
+                    <Cell key={`cell_${id}`} textStyle={{ fontWeight: 'bold', textAlign: atts.alignment }} data={updatedContent} />
                 :
-                <View key={`wrapper_${Math.random()}`} style={getStyles('wrappers', subType)}>{updatedContent}</View>)
+                <View key={`wrapper_${id}`} style={getStyles('wrappers', subType)}>{updatedContent}</View>)
     },
-    wWrapper: (atts, content) => Object.keys(atts).length === 0 ?
+    wWrapper: (atts, content, id) => Object.keys(atts).length === 0 ?
         content :
 
-        <View key={Math.random()}
+        <View key={`wWrapper_${id}`}
             style={{
                 display: "flex",
                 flexDirection: 'column',
@@ -150,11 +178,11 @@ const renderers = {
 
             }}
         >
-            <Text>{content}</Text>
+            <Text key={`Text_wWrapper_${id}`} >{content}</Text>
             {
                 Object.entries(atts).map(
                     a =>
-                        <Text key={`wWrapper_${Math.random()}`}
+                        <Text key={`wWrapper_${id}`}
                             style={{
                                 fontSize: 9,
                                 fontWeight: "bold",
@@ -168,8 +196,8 @@ const renderers = {
             }
         </View>,
     mergeParas: paras => paras,
-    table: (content) => <View key={Math.random()} style={{ flex: 1 }}><Table borderStyle={{ borderWidth: 1 }} style={{ flexDirection: "column" }}>{content}</Table></View>,
-    row: (content) => <TableWrapper key={Math.random()} style={{ flexDirection: "row" }}>{content}</TableWrapper>
+    table: (content, id) => <View key={`table_${id}`} style={{ flex: 1 }}><Table borderStyle={{ borderWidth: 1 }} style={{ flexDirection: "column" }}>{content}</Table></View>,
+    row: (content, id) => <TableWrapper key={`row_${id}`} style={{ flexDirection: "row" }}>{content}</TableWrapper>
 }
 
 export { renderers };

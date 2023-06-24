@@ -1,11 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import ResizableContainer from './ResizableContainer';
 import { View } from 'react-native';
 import { Dimensions } from 'react-native';
-import ConfigDrawer from './TextConfig/configDrawer'
 import { Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { StyleSheet } from 'react-native';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 import { faMinus } from '@fortawesome/free-solid-svg-icons/faMinus';
@@ -13,12 +11,10 @@ import { faMinus } from '@fortawesome/free-solid-svg-icons/faMinus';
 library.add(faPlus);
 library.add(faMinus);
 import TextChanger from './TextChanger';
-import { initial } from 'lodash';
 
 function ResizableTab({ pk }) {
 
   const [numberText, setNumberOfText] = useState(1);
-  const arrayHooks = [];
 
   /*
   const [isUserScroll, setIsUserScroll] = useState(true);

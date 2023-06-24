@@ -7,9 +7,15 @@ to DO :
         - InlineElement wrap
     - App:
         - (1 ConfigDrawer for all texts )
-        - Home TAb
+        - Home TAb :
+            - Fetch data when no data loaded
+            - Remove data when data loaded
+            - 
         - Choice of option (steal archraf work if possible)
-
+        - Note :
+            - Getting note for text
+            - Load note for text
+            - modification of note
 
 
 

@@ -27,6 +27,7 @@ const sofria2WebActions = {
                 }
                 workspace.settings = { ...defaultSettings, ...config }
                 workspace.webParas = [];
+                workspace.currentIndex = 0
                 output.sofria = {};
                 output.sofria.sequence = {};
                 workspace.currentSequence = output.sofria.sequence;
@@ -44,6 +45,7 @@ const sofria2WebActions = {
             description: "startSequence",
             test: () => true,
             action: ({ context, workspace }) => {
+                workspace.currentIndex += 1
                 workspace.currentSequence.type = context.sequences[0].type;
                 workspace.currentSequence.blocks = []
             }
@@ -53,8 +55,8 @@ const sofria2WebActions = {
         {
             description: "endSequence",
             test: () => true,
-            action: ({ context, workspace }) => {
-                if (context.inTable) {
+            action: ({ config, context, workspace }) => {
+                if (context.inTable && context.sequences[0].type.includes(['main'])) {
                     context.inTable = false
                     workspace.webParas.push(config.renderers.table(workspace.paraContentStack[0].content))
                 }
@@ -72,6 +74,7 @@ const sofria2WebActions = {
             action: ({ context, workspace }) => {
                 const block = context.sequences[0].block;
 
+                workspace.currentIndex += 1
 
                 if (!context.inTable) {
                     context.inTable = true
@@ -102,8 +105,8 @@ const sofria2WebActions = {
 
                 const popped = workspace.paraContentStack.shift();
                 workspace.paraContentStack[0].content.push(config.renderers.row(
-                    (workspace.settings.showWordAtts ? popped.atts : {}),
-                    popped.content
+                    popped.content,
+                    workspace.currentIndex
                 ));
             }
         },
@@ -145,16 +148,11 @@ const sofria2WebActions = {
                 !(["footnote"].includes(context.sequences[0].element.subType) && !workspace.settings.showFootnotes) &&
                 !(["xref"].includes(context.sequences[0].element.subType) && !workspace.settings.showXrefs),
             action: (environment) => {
-                if (environment.context.inTable) {
-                    environment.context.inTable = false
-                    environment.workspace.webParas.push(config.renderers.table(workspace.paraContentStack[0].content))
-                }
                 const element = environment.context.sequences[0].element;
 
                 const graftRecord = {
                     type: element.type,
                 };
-
                 if (element.sequence) {
                     graftRecord.sequence = {};
                     const cachedSequencePointer = environment.workspace.currentSequence;
@@ -178,10 +176,12 @@ const sofria2WebActions = {
             description: "Initialise content stack",
             test: () => true,
             action: ({ config, context, workspace }) => {
-                if (context.inTable) {
+
+                if (context.inTable && context.sequences[0].type.includes(['main'])) {
                     context.inTable = false
                     workspace.webParas.push(config.renderers.table(workspace.paraContentStack[0].content))
                 }
+                workspace.currentIndex += 1
                 const block = context.sequences[0].block;
                 workspace.paraContentStack = [
                     {
@@ -204,6 +204,7 @@ const sofria2WebActions = {
                             "usfm:m",
                         workspace.paraContentStack[0].content,
                         workspace.footnoteNo,
+                        workspace.currentIndex
                     )
                 );
             }
@@ -219,7 +220,7 @@ const sofria2WebActions = {
             description: "Handle standard w attributes",
             test: ({ context }) => context.sequences[0].element.subType === "usfm:w",
             action: ({ context, workspace }) => {
-
+                workspace.currentIndex += 1
                 const atts = context.sequences[0].element.atts;
                 const standardAtts = {};
                 for (const [key, value] of Object.entries(atts)) {
@@ -248,7 +249,7 @@ const sofria2WebActions = {
                     pushed.atts = context.sequences[0].element.atts
                 };
 
-
+                workspace.currentIndex += 1
                 workspace.paraContentStack.unshift(
                     pushed
                 );
@@ -270,7 +271,9 @@ const sofria2WebActions = {
 
                 workspace.paraContentStack[0].content.push(config.renderers.wWrapper(
                     (workspace.settings.showWordAtts ? popped.atts : {}),
-                    popped.content
+                    popped.content,
+                    workspace.currentIndex
+
                 ));
                 return false;
             }
@@ -285,10 +288,9 @@ const sofria2WebActions = {
             action: ({ config, workspace }) => {
 
                 const popped = workspace.paraContentStack.shift();
-                console.log(popped)
-                console.log(workspace.paraContentStack[0].content)
-                workspace.paraContentStack[0].content.push(config.renderers.wrapper(popped.subType === 'cell' ? popped.atts : {}, popped.subType, popped.content));
-                console.log(workspace.paraContentStack[0].content)
+
+                workspace.paraContentStack[0].content.push(config.renderers.wrapper(popped.subType === 'cell' ? popped.atts : {}, popped.subType, popped.content, workspace.currentIndex));
+
             }
         },
     ],
@@ -305,6 +307,7 @@ const sofria2WebActions = {
                         standardAtts[key.split('-')[1]] = value;
                     }
                 }
+                workspace.currentIndex += 1
                 workspace.paraContentStack.unshift(
                     {
                         atts: standardAtts,
@@ -339,8 +342,11 @@ const sofria2WebActions = {
                 //const renderedText = config.renderers.text(element.text);
                 //workspace.paraContentStack[0].content.push(renderedText);
                 element.text.split(" ").map((w, id) => {
-
-                    const renderedText = config.renderers.text((id === element.text.split(" ") - 1) ? w : w + " ")
+                    workspace.currentIndex += 1
+                    let word = (id === element.text.split(" ") - 1) ? w : w + " "
+                    let idWord = workspace.currentIndex
+                    let textRef = workspace.textRef
+                    const renderedText = config.renderers.text({ word, idWord, textRef })
                     workspace.paraContentStack[0].content.push(renderedText);
                 })
 
@@ -352,16 +358,17 @@ const sofria2WebActions = {
             description: "Show chapter/verse markers",
             test: () => true,
             action: ({ config, context, workspace }) => {
+                workspace.currentIndex += 1
                 const element = context.sequences[0].element;
                 if (element.subType === "chapter_label" && workspace.settings.showChapterLabels) {
                     workspace.chapter = element.atts.number;
-                    workspace.paraContentStack[0].content.push(config.renderers.chapter_label(element.atts.number));
+                    workspace.paraContentStack[0].content.push(config.renderers.chapter_label(element.atts.number, workspace.currentIndex));
                 } else if (element.subType === "verses_label" && workspace.settings.showVersesLabels) {
                     let bcv = [];
                     if (config.selectedBcvNotes.length > 0) {
                         bcv = [workspace.bookCode, workspace.chapter, element.atts.number]
                     }
-                    workspace.paraContentStack[0].content.push(config.renderers.verses_label(element.atts.number, bcv, config.bcvNotesCallback));
+                    workspace.paraContentStack[0].content.push(config.renderers.verses_label(element.atts.number, bcv, config.bcvNotesCallback, workspace.currentIndex));
                 }
             }
         },
@@ -377,4 +384,5 @@ const sofria2WebActions = {
         }
     ],
 };
+
 export default sofria2WebActions;

@@ -1,5 +1,8 @@
 {
   "expo": {
+    "assets": [
+      "./assets/personalNote/personalNote.json"
+    ],
     "name": "app",
     "slug": "app",
     "version": "1.0.0",
@@ -15,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gabrielaillet3.app"
     },
     "android": {
       "adaptiveIcon": {

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, PanResponder, StyleSheet, Animated } from 'react-native';
+import { Modal } from 'react-native-paper';
 
 const ResizableContainer = ({ children, canExpand = true, initialWidth }) => {
   const [width, setWidth] = useState(initialWidth);
@@ -38,7 +39,7 @@ const ResizableContainer = ({ children, canExpand = true, initialWidth }) => {
   }
   return (
 
-    <View style={[s, { flexDirection: 'row', borderRadius: 5 }]}>
+    <View style={[{ flexDirection: 'row', borderRadius: 5 }]}>
       <View style={styleContainer}>
         <View
           style={styleText}
