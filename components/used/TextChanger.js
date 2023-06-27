@@ -9,11 +9,12 @@ import { Button } from 'react-native-paper';
 library.add(faGear);
 
 import ConfigDrawer from "./TextConfig/configDrawer"
-function TextChanger({ pk }) {
+function TextChanger({ pk, textNumber }) {
     const [bible, setBible] = useState('local_fnT_1')
     const [livre, setLivre] = useState('TIT')
     const [isActive, setIsActive] = useState(false)
-    const [truc, machin] = useState()
+    console.log('TextChanger')
+
     return (
         <>
             <Button key={Math.random()} style={{ position: 'absolute', zIndex: 3 }}
@@ -21,7 +22,7 @@ function TextChanger({ pk }) {
                 }
                 onPress={() => setIsActive(true)} />
             <ConfigDrawer pk={pk} setIsActive={setIsActive} isActive={isActive} setBibleParent={setBible} bibleParent={bible} setLivreParent={setLivre} livreParent={livre} />
-            <ReadingScreen livre={livre} bible={bible} pk={pk} />
+            <ReadingScreen textNumber={textNumber} livre={livre} bible={bible} pk={pk} />
         </>
     )
 }

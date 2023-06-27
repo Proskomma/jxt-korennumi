@@ -8,7 +8,7 @@ import { useRenderDocument } from '../../../customHooks/useRenderDocument';
 
 
 
-export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurligne }) {
+export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurligne, textNumber }) {
 
 
 
@@ -40,28 +40,30 @@ export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurlign
         // Listen for changes in the state
         const handleChange = (newValue) => {
 
-            setIsActive(newValue[0]);
-            setPositionX(newValue[1].nativeEvent.pageX)
-            setPositionY(newValue[1].nativeEvent.pageY)
-            setIdItem(newValue[2])
 
-            const retrieveDat = async (id) => {
-                try {
-                    const value = await retrieveData(`${bible}_${livre}_current`)
-                    console.log(`${bible}_${livre}_current`)
-                    console.log(value)
-                    if (value !== null) {
-                        setDisplayText(value.data[newValue[2]])
-                    } else {
-                        console.log('No data found.');
-                        setDisplayText('No data found.')
+            if (newValue[3] === textNumber) {
+                setIsActive(newValue[0]);
+                setPositionX(newValue[1].nativeEvent.pageX)
+                setPositionY(newValue[1].nativeEvent.pageY)
+                setIdItem(newValue[2])
+
+                const retrieveDat = async (id) => {
+                    try {
+                        const value = await retrieveData(`${bible}_${livre}_current`)
+                        console.log(`${bible}_${livre}_current`)
+                        console.log(value)
+                        if (value !== null) {
+                            setDisplayText(value.data[newValue[2]])
+                        } else {
+                            console.log('No data found.');
+                            setDisplayText('No data found.')
+                        }
+                    } catch (error) {
+                        console.log('Error retrieving data:', error);
                     }
-                } catch (error) {
-                    console.log('Error retrieving data:', error);
-                }
-            };
-            retrieveDat()
-
+                };
+                retrieveDat()
+            }
         };
 
         // Subscribe to state changes
@@ -71,6 +73,7 @@ export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurlign
         return () => {
             getState.unsubscribe(handleChange);
         };
+
     }, []);
 
     return (

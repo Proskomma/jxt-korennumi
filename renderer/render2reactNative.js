@@ -77,8 +77,7 @@ const renderers = {
                 <Text
                     style={styles}
                     onPress={(event) => {
-                        console.log('text');
-                        updateState([true, event, idWord])
+                        updateState([true, event, idWord, workspace.textNumber])
                     }}>
                     {word}
                 </Text>

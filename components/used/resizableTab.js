@@ -14,33 +14,7 @@ import TextChanger from './TextChanger';
 
 function ResizableTab({ pk }) {
 
-  const [numberText, setNumberOfText] = useState(1);
-
-  /*
-  const [isUserScroll, setIsUserScroll] = useState(true);
-  const [scrollLock, setScrollLock] = useState(false);
-
-  const onScroll = (event, currentIndex) => {
-    if (scrollLock) return;
-
-    setScrollLock(true);
-    const offsetX = event.nativeEvent.contentOffset.x;
-
-
-    if (isUserScroll) {
-      setIsUserScroll(false);
-      flatListRefs.forEach((ref, index) => {
-        if (index !== currentIndex) {
-          ref.current.scrollToOffset({ offset: offsetX, animated: false });
-        }
-      });
-    } else {
-      setIsUserScroll(true);
-    }
-
-    setTimeout(() => setScrollLock(false), 20); // Release the lock after 100ms
-  }; */
-
+  const [numberText, setNumberOfText] = useState(2);
 
 
 
@@ -55,7 +29,7 @@ function ResizableTab({ pk }) {
         div={numberText}
       >
 
-        <TextChanger pk={pk} />
+        {<TextChanger textNumber={index} pk={pk} />}
       </ResizableContainer >
 
     )
@@ -64,9 +38,13 @@ function ResizableTab({ pk }) {
   return (
     <View style={{ flex: 1 }}>
       <View style={{
-        flexDirection: 'row', flex: 1, alignContent: 'space-between', position: 'relative'
+        flexDirection: 'row',
+        width: Dimensions.get('window').width,
+
       }}>
         {resizableContainers}
+
+
       </View>
       <View style={{ position: 'absolute', right: 20, zIndex: 3 }}>
         {numberText === 1 ?

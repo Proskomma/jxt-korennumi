@@ -2,9 +2,9 @@ import SofriaRenderFromProskomma from '../components/used/SofiraRenderFromProsko
 import sofria2WebActions from '../renderer/sofria2web';
 import { renderers } from '../renderer/render2reactNative';
 
-export default function renderDoc(documentResult, pk, livre, bible, keyOfSurligne) {
+export default function renderDoc(documentResult, pk, livre, bible, keyOfSurligne, textNumber) {
     let output = {};
-    let workspace = { textRef: `${bible}_${livre}_`, keyOfSurligne: keyOfSurligne };
+    let workspace = { textRef: `${bible}_${livre}_$${textNumber}`, textNumber: textNumber, keyOfSurligne: keyOfSurligne };
     let context = {};
 
     if (documentResult) {

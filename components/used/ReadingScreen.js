@@ -5,7 +5,8 @@ import { useRenderDocument } from '../../customHooks/useRenderDocument';
 import NoteModal from './personalNote/NoteModal';
 import { retrieveData } from './personalNote/NoteChangerFunction';
 import renderDoc from '../../customFunction/renderDocument';
-function ReadingScreen({ livre, bible, pk }) {
+function ReadingScreen({ livre, bible, pk, textNumber = 0 }) {
+  console.log(textNumber)
   const [data, setData] = useState([])
   const [keyOfSurligne, setKeyOfSurligne] = useState([]);
   const [output, setOutput] = useState(null)
@@ -33,14 +34,12 @@ function ReadingScreen({ livre, bible, pk }) {
   })
 
   useEffect(() => {
-    setOutput(renderDoc(documentResult, pk, bible, livre, keyOfSurligne))
-    console.log('output changed', keyOfSurligne)
-    console.log(output?.paras)
+    setOutput(renderDoc(documentResult, pk, bible, livre, keyOfSurligne, textNumber))
+
 
   }, [keyOfSurligne, documentResult])
 
   useEffect(() => {
-    console.log('data changed', keyOfSurligne)
     if (output?.paras) {
       if (data.length != 0) {
         setData(output.paras.slice(0, data.length))
@@ -53,8 +52,8 @@ function ReadingScreen({ livre, bible, pk }) {
   }, [output])
   return (
 
-    <>
-      <NoteModal keyOfSurligne={keyOfSurligne} setKeyOfSurligne={setKeyOfSurligne} livre={livre} bible={bible} />
+    <View style={{ flex: 1 }}>
+      <NoteModal textNumber={textNumber} livre={livre} bible={bible} setKeyOfSurligne={setKeyOfSurligne} keyOfSurligne={keyOfSurligne}></NoteModal>
       <FlatList
         style={{ height: '100%', width: '100%' }}
         removeClippedSubviews={true}
@@ -65,8 +64,8 @@ function ReadingScreen({ livre, bible, pk }) {
         onEndReached={loadMoreItems}
         scrollEventThrottle={16} // Add scrollEventThrottle for better performance
         onEndReachedThreshold={0.5} // Trigger loadMoreItems when the user reaches 50% from the end
-      />
-    </>
+      /></View>
+
 
   );
 }

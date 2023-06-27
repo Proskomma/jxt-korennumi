@@ -2,8 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, PanResponder, StyleSheet, Animated } from 'react-native';
 
 const ResizableContainer = ({ children, canExpand = true, initialWidth }) => {
+  console.log(initialWidth)
   const [width, setWidth] = useState(initialWidth);
-  useEffect(() => { setWidth(initialWidth) }, [initialWidth])
+  useEffect(() => {
+    setWidth(initialWidth);
+  }, [initialWidth]);
   const pan = useRef(new Animated.ValueXY()).current;
 
   const panResponder = PanResponder.create({
@@ -27,19 +30,20 @@ const ResizableContainer = ({ children, canExpand = true, initialWidth }) => {
     borderRadius: 10,
   } : {
     height: '100%',
-    width: width,
+    width: width - 20,
     borderRadius: 10,
   }
-  const styleContainer = !canExpand ? {
-    width: '100%',
-    flex: 1
-  } : {
-    flex: 1
+  const styleContainer = {
+    flex: 1,
+    width: initialWidth
   }
+  console.log(styleContainer)
   return (
 
-    <View style={[{ flexDirection: 'row', borderRadius: 5 }]}>
-      <View style={styleContainer}>
+    <View style={[{ flexDirection: 'row', borderRadius: 5 }, canExpand ? {} : { flex: 1 }]}>
+      <View style={canExpand ? {
+        width: width - 20
+      } : { flex: 1 }}>
         <View
           style={styleText}
         >
