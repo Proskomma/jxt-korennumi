@@ -13,20 +13,17 @@ import { Tabletest } from './components/proofOfConcept/tableTest/tableTest';
 const { usfm } = require('./components/proofOfConcept/tableTest/mat')
 import { ReadingScreen } from './components/used/ReadingScreen';
 import TextChanger from './components/used/TextChanger';
-import NoteChangerTab from './components/used/personalNote/NoteChangerTab';
+//import NoteChangerTab from './components/used/personalNote/NoteChangerTab';
 import componenentNul from './components/proofOfConcept/tableTest/buttonSubcribe/truc';
-import { MMKV } from 'react-native-mmkv'
 
-const mmkv = new MMKV({ path: MMKV.getLibraryPath() });
 
-// Wait for initialization to complete
-mmkv.initialize();
+
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
 
-  mmkv.set('key', 'value');
+
 
 
   const pk = new Proskomma([
@@ -89,7 +86,9 @@ export default function App() {
             tabBarIcon: ({ color, size }) => (
               <FontAwesomeIcon name="book" color={color} size={size} />)
           }}>
-          {() => <NoteChangerTab pk={pk} />}
+          {() =>
+            <ReadingScreen pk={pk} livre={'TIT'} bible={'local_fnT_1'} />
+          }
         </Tab.Screen>
 
       </Tab.Navigator>

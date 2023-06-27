@@ -1,27 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-async function SyncGet(key) {
-    try {
-        const jsonData = await AsyncStorage.getItem(`@MyApp:${key}`);
-        if (jsonData !== null) {
-            const data = JSON.parse(jsonData);
-            //console.log(`Data retrieved from ${key}.`);
-            return data;
-        } else {
-            //console.log(`No data found at ${key}.`);
-            return null;
-        }
-    } catch (error) {
-        console.log('Error retrieving data:', error);
-        return null;
-    }
-}
+
+
 
 
 async function storeDataInApp(key, data) {
     // Store JSON data at the specified key
     try {
         const jsonData = JSON.stringify(data);
+        console.log(jsonData)
         await AsyncStorage.setItem(`@MyApp:${key}`, jsonData);
         //console.log('Data stored successfully.');
     } catch (error) {
@@ -35,6 +22,8 @@ async function retrieveData(key) {
     // Fetch JSON data at the specified key
     try {
         const jsonData = await AsyncStorage.getItem(`@MyApp:${key}`);
+        console.log(key)
+        console.log(await AsyncStorage.getAllKeys())
         if (jsonData !== null) {
             const data = JSON.parse(jsonData);
             //console.log(`Data retrieved from ${key}.`);
@@ -85,7 +74,6 @@ function removeDataWithKey(key) {
 async function AddData(key, data) {
     //Push data to the array at key position
     let dataRetrieve = await retrieveData(key)
-    console.log(key, dataRetrieve, data.name)
 
     dataRetrieve = dataRetrieve.filter(d => d.name !== data.name);
 
@@ -115,11 +103,19 @@ async function changerCurrentNote(bible, book, noteName) {
 
 
 }
+async function addNoteToWord(key, Id, text) {
+    console.log(key)
+    console.log(text)
+    let dataRetrieve = await retrieveData(key)
+    dataRetrieve.data[Id] = text
+    await storeDataInApp(key, dataRetrieve)
+    console.log('done')
+}
+
 async function init(bible, livre) {
 
     await clearAll()
-    await initNoteForBibleBook(bible, livre, [{ name: "init", data: { 4: "1", 7: "7" } }, { name: "1", data: { 4: "premier note", 7: "7" } }, { name: "2", data: { 4: "deuxieme note" } }])
+    await initNoteForBibleBook(bible, livre, [{ name: "init", data: { 4: "1", 7: "7" } }, { name: "1", data: { 26: "premier note", 7: "7" } }, { name: "2", data: { 4: "deuxieme note" } }])
     await changerCurrentNote(bible, livre, "1")
-    //SyncStorage.init();
 }
-export { SyncGet, init, changerCurrentNote, initNoteForBibleBook, retrieveData, clearAll }
+export { addNoteToWord, init, changerCurrentNote, initNoteForBibleBook, retrieveData, clearAll }

@@ -24,6 +24,7 @@
     "expo-screen-orientation": "~5.1.1",
     "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.4",
+    "fibers": "^5.0.3",
     "fs": "^0.0.1-security",
     "fse": "^4.0.1",
     "lodash": "^4.17.21",

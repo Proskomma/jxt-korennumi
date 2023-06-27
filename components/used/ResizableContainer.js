@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, PanResponder, StyleSheet, Animated } from 'react-native';
-import { Modal } from 'react-native-paper';
 
 const ResizableContainer = ({ children, canExpand = true, initialWidth }) => {
   const [width, setWidth] = useState(initialWidth);

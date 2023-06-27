@@ -6,6 +6,7 @@ let stateValue = []
 export const getState = {
     subscribe: (listener) => {
         stateListeners.push(listener);
+
     },
     unsubscribe: (listener) => {
         const index = stateListeners.indexOf(listener);

@@ -346,7 +346,7 @@ const sofria2WebActions = {
                     let word = (id === element.text.split(" ") - 1) ? w : w + " "
                     let idWord = workspace.currentIndex
                     let textRef = workspace.textRef
-                    const renderedText = config.renderers.text({ word, idWord, textRef })
+                    const renderedText = config.renderers.text({ word, idWord, workspace })
                     workspace.paraContentStack[0].content.push(renderedText);
                 })
 

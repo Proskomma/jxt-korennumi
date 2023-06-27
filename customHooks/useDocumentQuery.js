@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 
 
 function useDocumentQuery(livre, bible, pk) {
-    const [documentResult, setDocumentResult] = useState(null)
-    useEffect(() => {
-        let documentQuery = `
+  const [documentResult, setDocumentResult] = useState(null)
+  useEffect(() => {
+    let documentQuery = `
       {
         document(docSetId: "${bible}" withBook: "${livre}"){
           id
@@ -13,10 +13,10 @@ function useDocumentQuery(livre, bible, pk) {
           }
       }}
       `
-        const documentResult = pk.gqlQuerySync(documentQuery)
-        setDocumentResult(documentResult)
-    }, [livre, bible])
-    return documentResult
+    const documentResult = pk.gqlQuerySync(documentQuery)
+    setDocumentResult(documentResult)
+  }, [livre, bible])
+  return documentResult
 }
 
 

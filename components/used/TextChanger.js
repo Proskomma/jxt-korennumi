@@ -9,10 +9,11 @@ import { Button } from 'react-native-paper';
 library.add(faGear);
 
 import ConfigDrawer from "./TextConfig/configDrawer"
-function TextChanger({ pk, flatListRef }) {
+function TextChanger({ pk }) {
     const [bible, setBible] = useState('local_fnT_1')
     const [livre, setLivre] = useState('TIT')
     const [isActive, setIsActive] = useState(false)
+    const [truc, machin] = useState()
     return (
         <>
             <Button key={Math.random()} style={{ position: 'absolute', zIndex: 3 }}

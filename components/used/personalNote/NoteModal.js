@@ -2,16 +2,16 @@ import { Button, Modal, TextInput } from 'react-native-paper';
 import { getState } from './stateManager';
 import { View, Text } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { init, retrieveData } from './NoteChangerFunction';
+import { init, retrieveData, addNoteToWord } from './NoteChangerFunction';
+import { useRenderDocument } from '../../../customHooks/useRenderDocument';
 
 
 
 
+export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurligne }) {
 
-export default function NodeModal({ livre, bible }) {
 
 
-    init(bible, livre)
     const [isActive, setIsActive] = useState(false);
     const [positionX, setPositionX] = useState(0)
     const [positionY, setPositionY] = useState(0)
@@ -44,13 +44,13 @@ export default function NodeModal({ livre, bible }) {
             setPositionX(newValue[1].nativeEvent.pageX)
             setPositionY(newValue[1].nativeEvent.pageY)
             setIdItem(newValue[2])
+
             const retrieveDat = async (id) => {
-                console.log()
                 try {
                     const value = await retrieveData(`${bible}_${livre}_current`)
-
+                    console.log(`${bible}_${livre}_current`)
+                    console.log(value)
                     if (value !== null) {
-                        console.log('Retrieved data:', value);
                         setDisplayText(value.data[newValue[2]])
                     } else {
                         console.log('No data found.');
@@ -80,9 +80,25 @@ export default function NodeModal({ livre, bible }) {
                     <View>
                         <TextInput
                             value={textDisplayed}
-                            label={textDisplayed}
                             onChangeText={text => setDisplayText(text)} />
-                        <Button mode="contained" onPress={() => console.log('attend')}>
+                        <Button mode="contained" onPress={async () => {
+                            if (textDisplayed != '') {
+                                console.log('laaaa')
+                                if (keyOfSurligne.indexOf(idItem) < 0) {
+                                    await addNoteToWord(`${bible}_${livre}_current`, idItem, textDisplayed);
+                                    setKeyOfSurligne([...keyOfSurligne, idItem.toString()])
+                                }
+                                setIsChanging(false)
+                            }
+                            else {
+
+                                await addNoteToWord(`${bible}_${livre}_current`, idItem, null);
+                                setKeyOfSurligne(keyOfSurligne.filter(e => e != idItem))
+                                setIsChanging(false)
+                            }
+
+
+                        }}>
                             Valider
                         </Button>
                     </View>
@@ -96,7 +112,7 @@ export default function NodeModal({ livre, bible }) {
                         </Button>
                     </View>
                 }
-            </Modal>
-        </View>)
+            </Modal >
+        </View >)
 }
 

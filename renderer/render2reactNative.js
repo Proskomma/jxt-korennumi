@@ -4,7 +4,6 @@ import { renderStyles as rs, ConvertCssToReactNativeStyle } from './renderStyles
 import { StyleSheet } from 'react-native';
 import { Table, Cell, TableWrapper } from 'react-native-reanimated-table';
 import { updateState } from '../components/used/personalNote/stateManager';
-import { retrieveData, SyncGet } from '../components/used/personalNote/NoteChangerFunction';
 let convertedStyleSheet = ConvertCssToReactNativeStyle(rs);
 const styles = StyleSheet.create(convertedStyleSheet);
 
@@ -66,29 +65,21 @@ function InlineElement(props) {
     }
 }
 const renderers = {
-    text: ({ word, idWord, textRef }) => {
+    text: ({ word, idWord, workspace }) => {
         let styles = {}
-        if (idWord === 4) {
-            console.log(word)
-            console.log(SyncGet(`${textRef}current`))
-            retrieveData(`${textRef}current`).then(result => {
-                if (result.data[idWord]) {
-                    console.log(result.data[idWord])
-                    styles = { backgroundColor: 'yellow' }
-                    console.log(styles)
-                }
-            })
-            console.log(styles)
 
+        if (workspace.keyOfSurligne?.includes(idWord.toString())) {
+            styles = { color: 'lightgrey' }
         }
-        if (JSON.stringify(styles) != JSON.stringify({})) {
-            console.log('ici')
-        }
+
         return (
             <View key={`text_${idWord}`} style={{ paddingTop: 20 }}>
                 <Text
                     style={styles}
-                    onPress={(event) => { updateState([true, event, idWord]) }}>
+                    onPress={(event) => {
+                        console.log('text');
+                        updateState([true, event, idWord])
+                    }}>
                     {word}
                 </Text>
             </View>
