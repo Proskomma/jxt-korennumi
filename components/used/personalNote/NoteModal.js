@@ -1,15 +1,14 @@
-import { Button, Modal, TextInput } from 'react-native-paper';
+import { Button, Modal, TextInput, Portal } from 'react-native-paper';
 import { getState } from './stateManager';
 import { View, Text } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { init, retrieveData, addNoteToWord } from './NoteChangerFunction';
+import { init, retrieveData, addNoteToWord, initNoteForBibleBook } from './NoteChangerFunction';
 import { useRenderDocument } from '../../../customHooks/useRenderDocument';
 
 
 
 
 export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurligne, textNumber }) {
-
 
 
     const [isActive, setIsActive] = useState(false);
@@ -19,6 +18,18 @@ export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurlign
     const [isChanging, setIsChanging] = useState(false)
     const [idItem, setIdItem] = useState(null)
 
+    useEffect(() => {
+        const keyCurrent = `${bible}_${livre}_current`
+        retrieveData(keyCurrent).then(result => {
+
+            if (!result) {
+                initNoteForBibleBook(bible, livre)
+            }
+            else {
+                console.log(result)
+            }
+        })
+    }, [bible, livre])
 
     const containerStyle = {
         justifyContent: 'center',
@@ -40,7 +51,6 @@ export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurlign
         // Listen for changes in the state
         const handleChange = (newValue) => {
 
-
             if (newValue[3] === textNumber) {
                 setIsActive(newValue[0]);
                 setPositionX(newValue[1].nativeEvent.pageX)
@@ -50,8 +60,7 @@ export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurlign
                 const retrieveDat = async (id) => {
                     try {
                         const value = await retrieveData(`${bible}_${livre}_current`)
-                        console.log(`${bible}_${livre}_current`)
-                        console.log(value)
+
                         if (value !== null) {
                             setDisplayText(value.data[newValue[2]])
                         } else {
@@ -74,10 +83,10 @@ export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurlign
             getState.unsubscribe(handleChange);
         };
 
-    }, []);
+    }, [livre, bible, textNumber]);
 
     return (
-        <View style={isActive ? { height: '100%', width: '100%', position: 'absolute', left: 0, top: 0, bottom: 0, right: 0, zIndex: 2 } : { disable: true }}>
+        <Portal>
             <Modal theme={{ colors: { backdrop: 'transparent', }, }} visible={isActive} onDismiss={() => setIsActive(false)} contentContainerStyle={containerStyle}>
                 {isChanging ?
                     <View>
@@ -116,6 +125,6 @@ export default function NodeModal({ livre, bible, setKeyOfSurligne, keyOfSurlign
                     </View>
                 }
             </Modal >
-        </View >)
+        </Portal>)
 }
 

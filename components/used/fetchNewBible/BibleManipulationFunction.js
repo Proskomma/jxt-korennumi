@@ -1,0 +1,117 @@
+import React, { useEffect } from 'react';
+import * as FileSystem from 'expo-file-system';
+
+
+const getFilesInDirectory = async (path) => {
+
+    const directory = FileSystem.documentDirectory + path;
+    const files = await FileSystem.readDirectoryAsync(directory);
+    return files;
+};
+
+const getAllInDirectory = async (path) => {
+
+    const directory = FileSystem.documentDirectory + path;
+    const files = await FileSystem.readDirectoryAsync(directory);
+    return files;
+};
+async function deleteAssetsFolder() {
+    try {
+        const folderPath = `${FileSystem.documentDirectory}assets`;
+        await FileSystem.deleteAsync(folderPath);
+        console.log('Assets folder deleted:', folderPath);
+    } catch (error) {
+        console.error('Error deleting assets folder:', error);
+    }
+}
+const getContentOfFile = async (path) => {
+    const directory = FileSystem.documentDirectory + path;
+    const files = await FileSystem.readAsStringAsync(directory);
+    return JSON.parse(files);
+};
+const createAssetsFolder = async () => {
+    try {
+        const directory = `${FileSystem.documentDirectory}assets`;
+        await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
+        console.log('Assets folder created successfully:', directory);
+    } catch (error) {
+        console.log('Error creating assets folder:', error);
+    }
+};
+
+const createFolder = async (path) => {
+    try {
+        const directory = `${FileSystem.documentDirectory}path`;
+        await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
+        console.log(`Folder at ${path} created successfully:`, directory);
+    } catch (error) {
+        console.log('Error creating assets folder:', error);
+    }
+};
+function createFileIfNotExists(path, content) {
+    return new Promise((resolve, reject) => {
+        const filePath = `${FileSystem.documentDirectory}${path}`;
+
+        FileSystem.getInfoAsync(filePath)
+            .then(({ exists }) => {
+                if (!exists) {
+                    FileSystem.writeAsStringAsync(filePath, content)
+                        .then(() => {
+                            console.log('File created:', filePath);
+                            resolve(true);
+                        })
+                        .catch(error => {
+                            console.error('Error creating file:', error);
+                            reject(false);
+                        });
+                } else {
+                    console.log('File already exists:', filePath);
+                    resolve(true);
+                }
+            })
+            .catch(error => {
+                console.error('Error checking file:', error);
+                reject(false);
+            });
+    });
+}
+
+function createFolderIfNotExists(path) {
+    return new Promise((resolve, reject) => {
+        const folderPath = `${FileSystem.documentDirectory}${path}`;
+        FileSystem.getInfoAsync(folderPath)
+            .then(({ exists }) => {
+                if (!exists) {
+                    FileSystem.makeDirectoryAsync(folderPath)
+                        .then(() => {
+                            console.log('Folder created:', folderPath);
+                            resolve(true);
+                        })
+                        .catch(error => {
+                            console.error('Error creating folder:', error);
+                            reject(false);
+                        });
+                } else {
+                    console.log('Folder already exists:', folderPath);
+                    resolve(true);
+                }
+            })
+            .catch(error => {
+                console.error('Error checking folder:', error);
+                reject(false);
+            });
+    });
+}
+
+
+const creatFileInFolder = async (directory, filecontent) => {
+    let directoryPath = FileSystem.documentDirectory + directory
+    try {
+        await FileSystem.writeAsStringAsync(directoryPath, filecontent);
+        console.log('File created successfully:');
+    } catch (error) {
+        console.log('Error creating files:', error);
+    }
+}
+
+export { deleteAssetsFolder, createFileIfNotExists, createFolderIfNotExists, getAllInDirectory, createFolder, getFilesInDirectory, getContentOfFile, createAssetsFolder, creatFileInFolder };

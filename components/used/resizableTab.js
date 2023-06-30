@@ -14,7 +14,7 @@ import TextChanger from './TextChanger';
 
 function ResizableTab({ pk }) {
 
-  const [numberText, setNumberOfText] = useState(2);
+  const [numberText, setNumberOfText] = useState(1);
 
 
 
@@ -49,19 +49,19 @@ function ResizableTab({ pk }) {
       <View style={{ position: 'absolute', right: 20, zIndex: 3 }}>
         {numberText === 1 ?
           <>
-            <Button key={Math.random()} style={{ position: 'absolute', right: 50, zIndex: 3 }}
+            <Button key={Math.random()} style={{ position: 'absolute', top: 30, right: 50, zIndex: 3 }}
               icon={() => <Icon name="minus" size={20} color="grey" />
               }
               onPress={() => { }} />
-            <Button key={Math.random()} style={{ position: 'absolute', right: 0, zIndex: 3 }}
+            <Button key={Math.random()} style={{ position: 'absolute', top: 30, right: 0, zIndex: 3 }}
               icon={() => <Icon name="plus" size={20} color="blue" />
               }
               onPress={() => setNumberOfText(numberText + 1)} /></> : <>
-            <Button key={Math.random()} style={{ position: 'absolute', right: 50, zIndex: 3 }}
+            <Button key={Math.random()} style={{ position: 'absolute', top: 30, right: 50, zIndex: 3 }}
               icon={() => <Icon name="minus" size={20} color="blue" />
               }
               onPress={() => setNumberOfText(numberText - 1)} />
-            <Button key={Math.random()} style={{ position: 'absolute', right: 0, zIndex: 3 }}
+            <Button key={Math.random()} style={{ position: 'absolute', top: 30, right: 0, zIndex: 3 }}
               icon={() => <Icon name="plus" size={20} color="blue" />
               }
               onPress={() => setNumberOfText(numberText + 1)} /></>

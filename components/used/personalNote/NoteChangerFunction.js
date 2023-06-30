@@ -22,8 +22,6 @@ async function retrieveData(key) {
     // Fetch JSON data at the specified key
     try {
         const jsonData = await AsyncStorage.getItem(`@MyApp:${key}`);
-        console.log(key)
-        console.log(await AsyncStorage.getAllKeys())
         if (jsonData !== null) {
             const data = JSON.parse(jsonData);
             //console.log(`Data retrieved from ${key}.`);
@@ -83,13 +81,13 @@ async function AddData(key, data) {
 }
 
 
-async function initNoteForBibleBook(bible, book, arrayNoteJson) {
+async function initNoteForBibleBook(bible, book) {
     //init for later use
     const key_current = `${bible}_${book}_current`
     const key_array = `${bible}_${book}_array`
 
-    await storeDataInApp(key_current, { name: "init", data: { 4: "1", 7: "7" } })
-    await storeDataInApp(key_array, arrayNoteJson)
+    await storeDataInApp(key_current, { name: "default", data: {} })
+    await storeDataInApp(key_array, [{ name: "default", data: {} }])
 
 }
 
@@ -113,9 +111,9 @@ async function addNoteToWord(key, Id, text) {
 }
 
 async function init(bible, livre) {
-
+/*
     await clearAll()
     await initNoteForBibleBook(bible, livre, [{ name: "init", data: { 4: "1", 7: "7" } }, { name: "1", data: { 26: "premier note", 7: "7" } }, { name: "2", data: { 4: "deuxieme note" } }])
     await changerCurrentNote(bible, livre, "1")
-}
+*/}
 export { addNoteToWord, init, changerCurrentNote, initNoteForBibleBook, retrieveData, clearAll }

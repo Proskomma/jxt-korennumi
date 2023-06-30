@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, PanResponder, StyleSheet, Animated } from 'react-native';
 
 const ResizableContainer = ({ children, canExpand = true, initialWidth }) => {
+  console.log('ResizableContainer')
+
   console.log(initialWidth)
   const [width, setWidth] = useState(initialWidth);
   useEffect(() => {
