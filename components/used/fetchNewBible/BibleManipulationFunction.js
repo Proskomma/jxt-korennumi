@@ -9,6 +9,11 @@ const getFilesInDirectory = async (path) => {
     return files;
 };
 
+const getInfoFolder = async (path) => {
+    const filePath = `${FileSystem.documentDirectory}${path}`;
+    return await FileSystem.getInfoAsync(filePath)
+}
+
 const getAllInDirectory = async (path) => {
 
     const directory = FileSystem.documentDirectory + path;
@@ -24,10 +29,20 @@ async function deleteAssetsFolder() {
         console.error('Error deleting assets folder:', error);
     }
 }
-const getContentOfFile = async (path) => {
+
+async function deleteNoteFolder() {
+    try {
+        const folderPath = `${FileSystem.documentDirectory}note`;
+        await FileSystem.deleteAsync(folderPath);
+        console.log('Assets folder deleted:', folderPath);
+    } catch (error) {
+        console.error('Error deleting assets folder:', error);
+    }
+}
+export async function getContentOfFileJeSaisPas(path) {
     const directory = FileSystem.documentDirectory + path;
     const files = await FileSystem.readAsStringAsync(directory);
-    return JSON.parse(files);
+    return JSON.parse(files)
 };
 const createAssetsFolder = async () => {
     try {
@@ -114,4 +129,4 @@ const creatFileInFolder = async (directory, filecontent) => {
     }
 }
 
-export { deleteAssetsFolder, createFileIfNotExists, createFolderIfNotExists, getAllInDirectory, createFolder, getFilesInDirectory, getContentOfFile, createAssetsFolder, creatFileInFolder };
+export { deleteNoteFolder, getInfoFolder, deleteAssetsFolder, createFileIfNotExists, createFolderIfNotExists, getAllInDirectory, createFolder, getFilesInDirectory, createAssetsFolder, creatFileInFolder };

@@ -1,11 +1,11 @@
 import { View, FlatList, Text } from 'react-native';
 import React, { useState, useCallback, useEffect } from 'react';
-import { useDocumentQuery } from '../../customHooks/useDocumentQuery';
-import { useRenderDocument } from '../../customHooks/useRenderDocument';
-import NoteModal from './personalNote/NoteModal';
-import { retrieveData } from './personalNote/NoteChangerFunction';
-import renderDoc from '../../customFunction/renderDocument';
-
+import { useDocumentQuery } from '../../../customHooks/useDocumentQuery';
+import { useRenderDocument } from '../../../customHooks/useRenderDocument';
+import NoteModal from '../../proofOfConcept/personalNote/NoteModal';
+import { retrieveData } from '../../proofOfConcept/personalNote/NoteChangerFunction';
+import renderDoc from '../../../customFunction/renderDocument';
+import sizeof from 'object-sizeof';
 function ReadingScreen({ option, livre, bible, pk, textNumber = 0 }) {
 
 
@@ -13,6 +13,7 @@ function ReadingScreen({ option, livre, bible, pk, textNumber = 0 }) {
   const [data, setData] = useState([]);
   const [keyOfSurligne, setKeyOfSurligne] = useState([]);
   const [output, setOutput] = useState(null);
+
   const [index, setIndex] = useState(20)
   useEffect(() => {
     retrieveData(`${bible}_${livre}_current`)

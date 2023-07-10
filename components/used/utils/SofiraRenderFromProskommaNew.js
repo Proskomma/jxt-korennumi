@@ -53,11 +53,12 @@ class SofriaRenderFromProskomma extends ProskommaRender {
         const nSequences = documentResult.data.document.nSequences;
         this.sequences = {};
         if (!environment.nbBlock) {
-            environment.config.nbBlock = 1000;
+            environment.config.nbBlock = 10000;
         }
         for (const seq of documentResult.data.document.sequences) {
             this.sequences[seq.id] = seq;
         }
+
         const headers = {};
         for (const header of documentResult.data.document.headers) {
             headers[header.key] = header.value;
@@ -131,6 +132,7 @@ class SofriaRenderFromProskomma extends ProskommaRender {
 
         this.cachedSequenceIds.unshift(mainId);
         this.renderSequence(environment);
+
         this.cachedSequenceIds.shift();
         this.renderEvent('endDocument', environment);
 
@@ -157,7 +159,6 @@ class SofriaRenderFromProskomma extends ProskommaRender {
         if (sequenceType === 'main') {
             if (environment.workspace.blockId) {
                 blocksIdsToRender = environment.workspace.blockId
-
             }
         }
 
@@ -234,14 +235,14 @@ class SofriaRenderFromProskomma extends ProskommaRender {
         let outputBlockN = 0;
 
         for (let i = 0; i < numberBlockTorender; i++) {
-            if (blocksIdsToRender.length != 0) {
 
+            if (blocksIdsToRender.length != 0) {
                 let inputBlockN = {}
                 if (sequenceType === 'main') {
                     inputBlockN = blocksIdsToRender.pop();
                 }
                 else {
-                    inputBlockN = blocksIdsToRender.pop();
+                    inputBlockN = blocksIdsToRender.shift();
 
                 }
                 const blocksResult = this.pk.gqlQuerySync(
@@ -270,12 +271,9 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                     this.cachedSequenceIds.shift();
                     outputBlockN++;
                 }
-
                 const subTypeValues = blockResult.bs.payload.split('/');
-
                 let subTypeValue;
                 if (subTypeValues[1] && ["tr", "zrow"].includes(subTypeValues[1])) {
-
                     subTypeValue = (subTypeValues[1] === "tr" ? "usfm:tr" : "pk");
                 } else if (subTypeValues[1]) {
                     subTypeValue = `usfm:${subTypeValues[1]}`;
@@ -289,8 +287,21 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                     wrappers: []
                 }
                 if (context.sequences[0].block.type === "row") {
+                    if (!environment.workspace.inTable) {
+                        this.renderEvent(`startTable`, environment)
+                        environment.workspace.inTable = true
+                    }
+
                     this.renderEvent('startRow', environment);
+
+
                 } else {
+                    if (environment.workspace.inTable && context.sequences[0].type.includes('main')) {
+                        this.renderEvent(`endTable`, environment)
+                        environment.workspace.tableHasContent = false
+                        environment.workspace.inTable = false
+                        environment.workspace.skipEndRow = false
+                    }
                     this.renderEvent('startParagraph', environment);
                 }
                 this._tokens = [];
@@ -319,6 +330,7 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                     this.renderEvent('startWrapper', environment);
                 }
                 this.renderContent(blockResult.items, environment);
+
                 this._tokens = [];
                 if (sequenceType === "main" && this.currentCV.verses) {
                     const wrapper = {
@@ -344,14 +356,24 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                     environment.context.sequences[0].block.wrappers.shift();
                     this.renderEvent('endWrapper', environment);
                 }
-                if (context.sequences[0].block.type === "row") {
+                if (context.sequences[0].block.type === "row" && !environment.workspace.skipEndRow) {
                     this.renderEvent('endRow', environment);
-                } else {
+                } else if (environment.workspace.skipEndRow && context.sequences[0].block.type === "row") {
+                    environment.workspace.skipEndRow = false
+                }
+                else {
                     this.renderEvent('endParagraph', environment);
                 }
                 delete context.sequences[0].block;
                 outputBlockN++;
             }
+        }
+        if (environment.workspace.inTable && context.sequences[0].type.includes('main')) {
+
+            this.renderEvent(`endTable`, environment)
+            environment.workspace.tableHasContent = false
+            environment.workspace.inTable = false
+            environment.workspace.skipEndRow = false
         }
         this.renderEvent('endSequence', environment);
         if (sequenceType === 'main') {
@@ -440,6 +462,13 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                     };
                     environment.context.sequences[0].element = wrapper;
                     if (item.subType === 'start') {
+                        if (environment.workspace.tableHasContent && environment.workspace.inTable) {
+                            this.renderEvent(`endRow`, environment)
+                            this.renderEvent(`endTable`, environment)
+                            environment.workspace.tableHasContent = false
+                            environment.workspace.inTable = false
+                            environment.workspace.skipEndRow = true
+                        }
                         this.currentCV[scopeBits[0]] = scopeBits[1];
                         environment.context.sequences[0].block.wrappers.unshift(wrapper.subType);
                         this.renderEvent(`start${scopeBits[0] === "chapter" ? "Chapter" : "Verses"}`, environment)
@@ -517,6 +546,7 @@ class SofriaRenderFromProskomma extends ProskommaRender {
 
 
                 } else if (scopeBits[0] === 'cell') {
+
                     const wrapper = {
                         direction: "start",
                         type: "wrapper",
@@ -528,7 +558,6 @@ class SofriaRenderFromProskomma extends ProskommaRender {
                         }
                     };
                     environment.context.sequences[0].element = wrapper;
-
                     if (item.subType === 'start') {
                         environment.context.sequences[0].block.wrappers.unshift(wrapper.subType);
                         this.renderEvent('startWrapper', environment);
@@ -570,6 +599,9 @@ class SofriaRenderFromProskomma extends ProskommaRender {
         environment.context.sequences[0].element = elementContext;
         this._tokens = [];
         this.renderEvent('text', environment);
+        if (environment.workspace.inTable) {
+            environment.workspace.tableHasContent = true
+        }
         delete environment.context.sequences[0].element;
     }
 

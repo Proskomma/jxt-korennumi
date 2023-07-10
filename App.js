@@ -1,64 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { ResizableTab } from './components/used/resizableTab'
-import { View, ScrollView, Text, Button, TouchableOpacity } from 'react-native';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-const { Proskomma } = require('proskomma-core');
 import { Provider } from 'react-native-paper';
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-const succinct = require('./succinct/test.json');
-const succinct2 = require('./succinct/fnT.json');
-const { usfm } = require('./components/proofOfConcept/tableTest/mat')
-import FetchBible from './components/used/fetchNewBible/DlPack';
+import { DLpack } from './components/used/fetchNewBible/DlPack';
 import { AddingPack } from './components/used/fetchNewBible/ShowPack';
-import EntriesScreen from './components/used/fetchNewBible/navigationEntries';
-const Tab = createBottomTabNavigator();
-
+import { EnteringTab } from './components/used/fetchNewBible/EnteringTab';
+import { createStackNavigator, HeaderBackButton } from "@react-navigation/stack";
+import { ResizableTab } from './components/used/ReadingTab/resizableTab';
+import { ParsingData } from './components/used/fetchNewBible/ParsingData';
+import NoteTab from './components/used/noteTab/NoteTab';
+import { TouchableOpacity, Text } from 'react-native';
 export default function App() {
 
+  const Stack = createStackNavigator()
 
   const client = new ApolloClient({
-    uri: "https://diegesis.bible/graphql",
+    uri: "https://cjvh.proskomma.bible/graphql",
     cache: new InMemoryCache(),
   });
 
-  const pk = new Proskomma([
-    {
-      name: "source",
-      type: "string",
-      regex: "^[^\\s]+$",
-    },
-    {
-      name: "project",
-      type: "string",
-      regex: "^[^\\s]+$",
-    },
-    {
-      name: "revision",
-      type: "string",
-      regex: "^[^\\s]+$",
-    },
-  ]);
-  pk.loadSuccinctDocSet(succinct);
-  pk.loadSuccinctDocSet(succinct2);
-  // pk.importDocument({ 'source': '1', 'project': 'web', 'revision': '0' }, 'usfm', usfm);
+
 
 
   return (
     <ApolloProvider client={client}>
       <Provider>
         <NavigationContainer>
-          <Tab.Navigator
-            initialRouteName="Entries"
-            screenOptions={{
-              headerShown: false,
+          <Stack.Navigator initialRouteName="Home Tab">
+            <Stack.Screen name="Telechargement de Pack" component={DLpack} />
+            <Stack.Screen name="Selection de Pack" component={AddingPack} />
+            <Stack.Screen name="Home Tab" component={EnteringTab} />
+            <Stack.Screen
+              name="ReadTab"
+              component={ResizableTab}
+              options={({ navigation, route }) => ({
+                headerLeft: () => (
+                  <TouchableOpacity onPress={() => navigation.navigate("Home Tab")}><Text>Retour Menu Principale</Text></TouchableOpacity>
+                )
+              })}
+            />
+            <Stack.Screen name="ParseTab" component={ParsingData} />
+            <Stack.Screen name="NoteTab" component={NoteTab} />
 
-            }}>
-            <Tab.Screen key={Math.random()} name="Entries">
-              {() => <EntriesScreen />}
-            </Tab.Screen>
-          </Tab.Navigator>
+          </Stack.Navigator>
         </NavigationContainer >
       </Provider>
     </ApolloProvider>

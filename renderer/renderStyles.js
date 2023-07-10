@@ -43,6 +43,7 @@ const renderStyles = {
         "usfm:io": {
             paddingLeft: "1.5em"
         },
+
         "usfm:iot": {
             fontWeight: "bold",
             fontSize: "large",
@@ -168,19 +169,26 @@ const renderStyles = {
             fontStyle: "italic",
             fontSize: "large"
         },
+        "usfm:s4": {
+
+        },
+        "usfm:s5": {
+
+        },
         "usfm:sr": {
             fontSize: "large"
         },
         "usfm:tr": {},
         "usfm:x": {
             fontSize: "small"
-        }
+        },
+        "usfm:ib": {},
     },
     marks: {
         default: {},
         chapter_label: {
             float: "left",
-            fontSize: "xx-large",   
+            fontSize: "xx-large",
             marginRight: "0.5em"
         },
         verses_label: {
@@ -195,6 +203,10 @@ const renderStyles = {
         "usfm:add": {
             fontStyle: "italic"
         },
+        "usfm:ior": {
+
+        },
+
         "usfm:bd": {
             fontWeight: "bold"
         },
@@ -205,6 +217,7 @@ const renderStyles = {
         "usfm:bk": {
             fontWeight: "bold"
         },
+
         chapter: {},
         "usfm:fl": {},
         "usfm:fm": {},
@@ -250,78 +263,80 @@ const renderStyles = {
 };
 
 
-function ConvertCssToReactNativeStyle(styleSheet){
+function ConvertCssToReactNativeStyle(styleSheet) {
     //  note that this function is not exaustive and need futher adding. Unfortunatly not all css 
     //is compatible with react native so be sure to check the documentation when adding css 
     let copyStyleSheet = styleSheet;
     const keyFirstLayerArray = Object.keys(copyStyleSheet);
     keyFirstLayerArray.map(firstLayerKeys => {
-        const secondLayerKeysArray = Object.keys(copyStyleSheet[firstLayerKeys]);     
-        secondLayerKeysArray.map(secondLayerKey =>{
-            const thirdLayerKeysArray = Object.keys(copyStyleSheet[firstLayerKeys][secondLayerKey]);  
+        const secondLayerKeysArray = Object.keys(copyStyleSheet[firstLayerKeys]);
+        secondLayerKeysArray.map(secondLayerKey => {
+            const thirdLayerKeysArray = Object.keys(copyStyleSheet[firstLayerKeys][secondLayerKey]);
             thirdLayerKeysArray.map(thirdLayerKey => {
-                
 
-                if(thirdLayerKey === 'float'){
-                    if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'left'){
+
+                if (thirdLayerKey === 'float') {
+                    if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'left') {
                         copyStyleSheet[firstLayerKeys][secondLayerKey]['textAlign'] = 'left';
                         delete copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey];
                     }
                 }
-                if(thirdLayerKey === 'verticalAlign'){
-                    if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'super'){
+                if (thirdLayerKey === 'verticalAlign') {
+                    if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'super') {
                         copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = 'top';
                     }
                 }
-                if(thirdLayerKey === 'textIndent'){
-                    if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey].includes('em')){
+                if (thirdLayerKey === 'textIndent') {
+                    if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey].includes('em')) {
                         let stringToChange = copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey];
-                        stringToChange.replace("em","");
-                        copyStyleSheet[firstLayerKeys][secondLayerKey]['marginLeft'] = parseFloat(stringToChange)*16;
+                        stringToChange.replace("em", "");
+                        copyStyleSheet[firstLayerKeys][secondLayerKey]['marginLeft'] = parseFloat(stringToChange) * 16;
                         delete copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey];
                     }
                     delete copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey];
 
                 }
-                if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'medium'){
+                if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'medium') {
                     copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = 16;
                 }
-                if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'x-small'){
+                if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'x-small') {
                     copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = 10;
                 }
-                if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'xx-small'){
+                if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'xx-small') {
                     copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = 9;
                 }
-                if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'small'){
+                if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'small') {
                     copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = 13.333;
                 }
-                if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'large'){
+                if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'large') {
                     copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = 18;
                 }
-                if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'x-large'){
+                if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'x-large') {
                     copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = 24;
                 }
-                if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'xx-large'){
+                if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] === 'xx-large') {
                     copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = 32;
                 }
-                if(typeof(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey]) === typeof('string')){
-                    if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey].includes('em')){
+                if (typeof (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey]) === typeof ('string')) {
+                    if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey].includes('em')) {
                         let stringToChange = copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey];
-                        stringToChange.replace("em","");
-                        copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = parseFloat(stringToChange)*16;
+                        stringToChange.replace("em", "");
+                        copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = parseFloat(stringToChange) * 16;
                         return;
                     }
-                    if(copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey].includes('ex')){
+                    if (copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey].includes('ex')) {
                         let stringToChange = copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey];
-                        stringToChange.replace("ex","");
+                        stringToChange.replace("ex", "");
                         copyStyleSheet[firstLayerKeys][secondLayerKey][thirdLayerKey] = parseFloat(stringToChange);
                         return;
                     }
-                    
-                }})
-        })});
-        return copyStyleSheet;
+
+                }
+            })
+        })
+    });
+    return copyStyleSheet;
 }
 
 
-export {renderStyles,ConvertCssToReactNativeStyle};
+export { renderStyles, ConvertCssToReactNativeStyle };

@@ -1,4 +1,4 @@
-import SofriaRenderFromProskomma from '../components/used/SofiraRenderFromProskommaNew';
+import SofriaRenderFromProskomma from '../components/used/utils/SofiraRenderFromProskommaNew';
 import sofria2WebActions from '../renderer/sofria2web';
 
 export default function renderDoc(documentResult, pk, livre, bible, keyOfSurligne, textNumber, option) {

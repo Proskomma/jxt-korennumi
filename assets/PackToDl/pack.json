@@ -2,16 +2,10 @@
     "pack": [
       {
         "title": "Aide à la traduction Francaise",
+        "Bibles":["DCS_69772_1"],
+        "Notes":["MVHSSTAGING_MzAwMjE2Zjkt_M2FkMDQ2YTkt"],
+        "initalText":"DCS_69772_1/TIT",
         "items": [
-          {
-            "title": "Louis Segond 1910",
-            "source": "eBible",
-            "id": "fraLSG",
-            "revision": "2022-12-26",
-            "type": "bible",
-            "langue": "fr"
-
-          },
           {
             "title": "French GLT",
             "source": "DCS",
@@ -19,11 +13,23 @@
             "revision": "1",
             "type": "bible",
             "langue": "fr"
+          },
+          {
+            "title": "Notes Tyndale",
+            "source": "MVHSSTAGING",
+            "id": "MzAwMjE2Zjkt",
+            "revision": "M2FkMDQ2YTkt",
+            "type": "Notes",
+            "langue": "fr"
           }
+
         ]
       },
       {
         "title": "Aide à la traduction Francaise 2 pour test",
+        "Bibles":["eBible_fraLSG_2022-12-26","DCS_69772_1"],
+        "Notes":[],
+        "initalText":"eBible_fraLSG_2022-12-26/TIT",
         "items": [
           {
             "title": "Louis Segond 1910",

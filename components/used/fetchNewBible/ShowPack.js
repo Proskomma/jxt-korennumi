@@ -5,7 +5,7 @@ import { useFetchPackFromServer } from './DlPack';
 // Assuming that packJson is an object with a "pack" property
 const packJson = require('../../../assets/PackToDl/pack.json')
 
-function AddingPack({ navigation }) {
+function AddingPack({ navigation, route }) {
     return (
         <ScrollView contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }} style={{ height: '100%', width: '100%' }}>
             <View style={{ height: 60 }}></View>
@@ -41,7 +41,9 @@ function AddingPack({ navigation }) {
                             <TouchableOpacity onPress={() => {
                                 const source = pack;
                                 navigation.navigate("Telechargement de Pack", {
-                                    source
+                                    source,
+                                    pk: route.params.pk
+
                                 });
                             }} style={{ backgroundColor: 'white', borderWidth: 1, borderRadius: 4, padding: 10 }}  >
                                 <Text style={{ fontWeight: 'bold' }}>Telecharger ce pack</Text>

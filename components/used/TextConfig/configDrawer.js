@@ -27,6 +27,7 @@ function changeValueConfig(optionParentToChange, array) {
     optionParent.showParaStyles = array[6]
     optionParent.showCharacterMarkup = array[7]
     optionParent.showVersesLabels = array[8]
+    optionParent.showChapterLabels = array[9]
     return optionParent
 }
 
@@ -44,10 +45,9 @@ const ConfigDrawer = ({ optionParent, setOptionParent, pk, setIsActive, isActive
         optionParent.showXrefs,
         optionParent.showParaStyles,
         optionParent.showCharacterMarkup,
-        optionParent.showVersesLabels])
+        optionParent.showVersesLabels,
+        optionParent.showChapterLabels])
 
-    let config = optionParent;
-    config.showWordAtts = option[0]
 
     const ExecuteFirst = useRef(false)
     useEffect(() => {

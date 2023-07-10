@@ -6,14 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { init, retrieveData, changerCurrentNote } from './NoteChangerFunction';
 import AccordionItem from '../TextConfig/AccordionItem';
 
-export default function NoteChangerTab({ pk }) {
+export default function NoteChangerTab({ navigation, route }) {
     const [notesInSystem, setNotesInSystem] = useState([]);
     const [forceUpdate, setForceUpdate] = useState(false)
     useEffect(() => {
         const fetchData = async () => {
             const fetchedNotes = [];
 
-            const livres = pk.gqlQuerySync(`
+            const livres = route.params.pk.gqlQuerySync(`
                 {
                     docSets {
                         id

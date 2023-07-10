@@ -13,8 +13,9 @@ function ConfigOptionSelection({ option, setOption }) {
     'showXrefs',
     'showParaStyles',
     'showCharacterMarkup',
+    'showVersesLabels',
     'showChapterLabels',
-    'showVersesLabels'])
+  ])
 
 
   return <View>{

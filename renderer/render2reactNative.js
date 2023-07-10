@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { renderStyles as rs, ConvertCssToReactNativeStyle } from './renderStyles';
 import { StyleSheet } from 'react-native';
 import { Table, Cell, TableWrapper } from 'react-native-reanimated-table';
-import { updateState } from '../components/used/personalNote/stateManager';
+import { updateState } from '../components/proofOfConcept/personalNote/stateManager';
 let convertedStyleSheet = ConvertCssToReactNativeStyle(rs);
 const styles = StyleSheet.create(convertedStyleSheet);
 
@@ -17,6 +17,7 @@ const getStyles = (type, subType) => {
     }
     return { ...styles[type].default, ...styles[type][subType] };
 }
+
 
 
 
@@ -66,48 +67,48 @@ function InlineElement(props) {
 }
 const renderers = {
     text: ({ word, idWord, workspace }) => {
-        let styles = {}
-
-        if (workspace.keyOfSurligne?.includes(idWord.toString())) {
-            styles = { color: 'lightgrey' }
-        }
 
         return (
-            <View key={`text_${idWord}`} style={{ paddingTop: 20 }}>
+            <View key={`text_${idWord}`} style={{ paddingTop: 12 }}>
                 <Text
-                    style={styles}
-                    onPress={(event) => {
-                        updateState([true, event, idWord, workspace.textNumber])
-                    }}>
+                >
                     {word}
                 </Text>
             </View>
         )
     },
-    chapter_label: (number, id) => <View key={`chapter_label_${id}`} ><Text style={{
-        ...getStyles('marks', "chapter_label"),
-    }}>{number}</Text></View>,
+    chapter_label: (number, id) =>
+        <View
+            onPress={() => { console.log('chapter label?') }}
+            key={`chapter_label_${id}`} ><Text
+                style={{
+                    ...getStyles('marks', "chapter_label"),
+                }}>{number}</Text></View>,
     verses_label: (number, bcv, bcvCallback, id) =>
         bcv && bcv.length === 3 ?
             <Text
-                onClick={() => bcvCallback(bcv)} style={{
+                key={`verse_label${id}`}
+                onPress={() => {
+                    bcvCallback(bcv)
+                }}
+                style={{
                     ...getStyles('marks', "verses_label"),
-                    textDecoration: "underline",
                     color: "#00D"
                 }}
             >
                 {number}
             </Text> :
-            <View key={`versesLabel_${id}`} style={{ flexDirection: 'row', paddingTop: 10 }}>
-                <Text style={{
-                    ...getStyles('marks', "verses_label"),
-                    marginRight: 10,
-                }}>
+            <View
+                key={`versesLabel_${id}`} style={{ flexDirection: 'row', paddingTop: 10 }}>
+                <Text onPress={() => { bcvCallback(bcv) }}
+                    style={{
+                        ...getStyles('marks', "verses_label"),
+                        marginRight: 10,
+                    }}>
                     {number}</Text></View>
     ,
     paragraph: (subType, content, footnoteNo, id) => {
         let TitleContent = {};
-
         if (["usfm:mt", "usfm:s"].includes(subType)) {
             const updatedContent = content.map((element, index) => {
                 const updatedChildren = React.Children.map(element.props.children, (child, childIndex) => {
@@ -139,6 +140,17 @@ const renderers = {
     },
 
     wrapper: (atts, subType, content, id) => {
+        if (subType.includes('usfm:it')) {
+
+            return <View key={`wrapper_${id} `} style={{ flexDirection: 'row', flexWrap: 'wrap' }}>{
+                content.map((element, index) => {
+                    const updatedChildren = React.Children.map(element.props.children, (child, childIndex) => {
+                        return React.cloneElement(child, { style: { ...getStyles('wrappers', subType) }, key: `italic_text_intro${index}_${childIndex}` });
+                    });
+                    return React.cloneElement(element, { key: element.key || `parent_${index}` }, updatedChildren);
+                })}</View>
+
+        }
         const updatedContent = content.map((element, index) => {
             return React.cloneElement(element, { style: { paddingTop: 0 }, key: `wrapper_content_${index} ` });
         });

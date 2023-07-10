@@ -19,8 +19,7 @@ const styles = StyleSheet.create({
   },
   accordContainer: {
     padding: 10,
-    width: '70%',
-
+    width: '70%'
 
   },
   accordHeader: {
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
 });
 
 
-function AccordionItem({ children, title, disable }) {
+function AccordionItem({ children, title, disable, containerStyle }) {
   const [expanded, setExpanded] = useState(false);
   useEffect(() => {
     if (disable) {
@@ -91,7 +90,7 @@ function AccordionItem({ children, title, disable }) {
 
   return (
     disable ?
-      <View style={styles.accordContainer}>
+      <View style={containerStyle ? containerStyle : styles.accordContainer}>
         <View style={styles.accordHeaderDisable}>
           <Text key={Math.random()} style={styles.accordTitle}>{title}</Text>
           <FontAwesomeIcon key={Math.random()} icon={expanded ? faChevronDown : faCircleChevronUp} size={20} color="black" />

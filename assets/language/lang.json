@@ -1,0 +1,79 @@
+{
+    "TEXT_ADD":
+    {     
+        "fr": "ajouter du contenu",
+        "es": ""
+    },
+    "TEXT_ADD_DESC":
+    {
+        "fr":"Appuyer sur ce bouton pour ajouter du contenu",
+        "es":""
+    },
+    "TEXT_READ":
+    {
+        "fr":"Lire du contenu",
+        "es":""
+    },
+    "TEXT_READ_DESC":
+    {
+        "fr":"Appuyer sur ce bouton pour lire le contenu present sur votre telephone",
+        "es":""
+    },
+    "TEXT_DEL":
+    {
+        "fr":"Supprimer tout le contenu",
+        "es":""
+    },
+    "TEXT_DEL_DESC":
+    {
+        "fr":"Appuyer sur ce bouton pour supprimer tout le contenu de votre telephone",
+        "es":""
+    },
+    "TEXT_DEL_WARNING":
+    {
+        "fr":"Etes vous sur de vouloir supprimer le contenu present sur votre telephone ?",
+        "es":""
+    },
+    "TEXT_DEL_YES":
+    {
+        "fr":"supprimer",
+        "es":""
+    },
+    "TEXT_DEL_NO":
+    {
+        "fr":"annuler",
+        "es":""
+    }
+    ,
+    "TEXT_DOWNLOAD":
+    {
+        "fr":"Telecharger ce pack",
+        "es":""
+    },
+    "TEXT_LOADING":
+    {
+        "fr":"En train de charger",
+        "es":""
+    },
+    "TEXT_DOWNLOAD_LOADING":
+    {
+        "fr":"Telechargement des elements depuis le serveur web",
+        "es":""
+    },
+    "TEXT_OPTIONS":
+    {
+        "fr":"Options",
+        "es":""
+    },
+    "TEXT_BOOK":
+    {
+        "fr":"Livre",
+        "es":""
+    },
+    "TEXT_BIBLE":
+    {
+        "fr":"Bible",
+        "es":""
+    }
+
+}

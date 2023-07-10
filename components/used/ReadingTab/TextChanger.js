@@ -1,34 +1,48 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { View, Text } from "react-native";
 import { ReadingScreen } from "./ReadingScreen"
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faGear } from '@fortawesome/free-solid-svg-icons/faGear';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-paper';
-import { renderers } from "../../renderer/render2reactNative";
+import { renderers } from "../../../renderer/render2reactNative";
+import { retrieveData } from "../../proofOfConcept/personalNote/NoteChangerFunction";
+import { parse, stringify, toJSON, fromJSON } from 'flatted';
+
+var sizeof = require('object-sizeof');
+
 library.add(faGear);
 
-import ConfigDrawer from "./TextConfig/configDrawer"
-function TextChanger({ pk, textNumber }) {
-
-    const [bible, setBible] = useState('local_fnT')
-    const [livre, setLivre] = useState('TIT')
+import ConfigDrawer from "../TextConfig/configDrawer"
+function TextChanger({ pk, initialText, textNumber, navigation }) {
+    const [bible, setBible] = useState(initialText ? initialText[0] : '')
+    const [livre, setLivre] = useState(initialText ? initialText[1] : '')
+    const [isActive, setIsActive] = useState(false)
+    useEffect(() => {
+        option.bcvNotesCallback = (bcv) => {
+            console.log(bcv)
+            navigation.navigate("NoteTab", { bible: bible, pk: pk, bcv: bcv })
+        }
+    }, [bible])
     const [option, setOption] = useState({
         showWordAtts: false,
-        showTitles: false,
-        showHeadings: false,
-        showIntroductions: false,
-        showFootnotes: false,
-        showXrefs: false,
-        showParaStyles: false,
-        showCharacterMarkup: false,
-        showChapterLabels: false,
-        showVersesLabels: false,
-        selectedBcvNotes: [],
+        showTitles: true,
+        showHeadings: true,
+        showIntroductions: true,
+        showFootnotes: true,
+        showXrefs: true,
+        showParaStyles: true,
+        showCharacterMarkup: true,
+        showVersesLabels: true,
+        showChapterLabels: true,
+        selectedBcvNotes: [1],
+        bcvNotesCallback: (bcv) => {
+            console.log(bcv)
+            navigation.navigate("NoteTab", { bible: bible, pk: pk, bcv: bcv })
+        },
         displayPartOfText: { state: 'begin' },
         renderers,
     })
-    const [isActive, setIsActive] = useState(true)
     let testChapter = pk.gqlQuerySync(
         `{
             docSet(id: "${bible}") {
@@ -53,7 +67,6 @@ function TextChanger({ pk, textNumber }) {
     }
     return (
         <>
-            <View style={{ height: 30 }}></View>
             <Button key={Math.random()} style={{ top: 30, position: 'absolute', zIndex: 3 }}
                 icon={() => <Icon name="gear" size={20} color="blue" />
                 }

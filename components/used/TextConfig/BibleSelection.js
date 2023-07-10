@@ -8,7 +8,7 @@ function BibleSelection({ pk, bible, setBible }) {
   const [checked, setChecked] = React.useState(bible);
   let docSetids = useRef(pk.gqlQuerySync(
     `{
-      docSets 
+      docSets(withBook: "TIT") 
       {
         id
       }
